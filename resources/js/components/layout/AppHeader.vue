@@ -2,6 +2,7 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from '@lucide/vue';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import AppLogo from '@/components/layout/AppLogo.vue';
 import AppLogoIcon from '@/components/layout/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/layout/Breadcrumbs.vue';
@@ -34,6 +35,7 @@ import {
 import UserMenuContent from '@/components/layout/UserMenuContent.vue';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { getInitials } from '@/composables/useInitials';
+import { useLocale } from '@/composables/useLocale';
 import { toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes/platform';
 import type { BreadcrumbItem, NavItem } from '@/types';
@@ -49,13 +51,20 @@ const props = withDefaults(defineProps<Props>(), {
 const page = usePage();
 const auth = computed(() => page.props.auth);
 const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
+const { t } = useI18n();
+
+// The mobile menu slides in from the reading-start side.
+const { direction } = useLocale();
+const sheetSide = computed(() =>
+    direction.value === 'rtl' ? 'right' : 'left',
+);
 
 const activeItemStyles =
     'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'nav.dashboard',
         href: dashboard(),
         icon: LayoutGrid,
     },
@@ -63,12 +72,12 @@ const mainNavItems: NavItem[] = [
 
 const rightNavItems: NavItem[] = [
     {
-        title: 'Repository',
+        title: 'nav.repository',
         href: 'https://github.com/laravel/vue-starter-kit',
         icon: Folder,
     },
     {
-        title: 'Documentation',
+        title: 'nav.documentation',
         href: 'https://laravel.com/docs/starter-kits#vue',
         icon: BookOpen,
     },
@@ -86,16 +95,16 @@ const rightNavItems: NavItem[] = [
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                class="mr-2 h-9 w-9"
+                                class="me-2 h-9 w-9"
                             >
                                 <Menu class="h-5 w-5" />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="left" class="w-[300px] p-6">
-                            <SheetTitle class="sr-only"
-                                >Navigation menu</SheetTitle
-                            >
-                            <SheetHeader class="flex justify-start text-left">
+                        <SheetContent :side="sheetSide" class="w-[300px] p-6">
+                            <SheetTitle class="sr-only">{{
+                                t('nav.navigationMenu')
+                            }}</SheetTitle>
+                            <SheetHeader class="flex justify-start text-start">
                                 <AppLogoIcon
                                     class="size-6 fill-current text-black dark:text-white"
                                 />
@@ -121,7 +130,7 @@ const rightNavItems: NavItem[] = [
                                             :is="item.icon"
                                             class="h-5 w-5"
                                         />
-                                        {{ item.title }}
+                                        {{ t(item.title) }}
                                     </Link>
                                 </nav>
                                 <div class="flex flex-col space-y-4">
@@ -131,14 +140,14 @@ const rightNavItems: NavItem[] = [
                                         :href="toUrl(item.href)"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        class="flex items-center space-x-2 text-sm font-medium"
+                                        class="flex items-center gap-2 text-sm font-medium"
                                     >
                                         <component
                                             v-if="item.icon"
                                             :is="item.icon"
                                             class="h-5 w-5"
                                         />
-                                        <span>{{ item.title }}</span>
+                                        <span>{{ t(item.title) }}</span>
                                     </a>
                                 </div>
                             </div>
@@ -152,7 +161,7 @@ const rightNavItems: NavItem[] = [
 
                 <!-- Desktop Menu -->
                 <div class="hidden h-full lg:flex lg:flex-1">
-                    <NavigationMenu class="ml-10 flex h-full items-stretch">
+                    <NavigationMenu class="ms-10 flex h-full items-stretch">
                         <NavigationMenuList
                             class="flex h-full items-stretch space-x-2"
                         >
@@ -175,26 +184,27 @@ const rightNavItems: NavItem[] = [
                                     <component
                                         v-if="item.icon"
                                         :is="item.icon"
-                                        class="mr-2 h-4 w-4"
+                                        class="me-2 h-4 w-4"
                                     />
-                                    {{ item.title }}
+                                    {{ t(item.title) }}
                                 </Link>
                                 <div
                                     v-if="isCurrentUrl(item.href)"
-                                    class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"
+                                    class="absolute start-0 bottom-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"
                                 ></div>
                             </NavigationMenuItem>
                         </NavigationMenuList>
                     </NavigationMenu>
                 </div>
 
-                <div class="ml-auto flex items-center space-x-2">
+                <div class="ms-auto flex items-center space-x-2">
                     <div class="relative flex items-center space-x-1">
                         <Button
                             variant="ghost"
                             size="icon"
                             class="group h-9 w-9 cursor-pointer"
                         >
+                            <span class="sr-only">{{ t('nav.search') }}</span>
                             <Search
                                 class="size-5 opacity-80 group-hover:opacity-100"
                             />
@@ -220,7 +230,7 @@ const rightNavItems: NavItem[] = [
                                                     rel="noopener noreferrer"
                                                 >
                                                     <span class="sr-only">{{
-                                                        item.title
+                                                        t(item.title)
                                                     }}</span>
                                                     <component
                                                         :is="item.icon"
@@ -230,7 +240,7 @@ const rightNavItems: NavItem[] = [
                                             </Button>
                                         </TooltipTrigger>
                                         <TooltipContent>
-                                            <p>{{ item.title }}</p>
+                                            <p>{{ t(item.title) }}</p>
                                         </TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>

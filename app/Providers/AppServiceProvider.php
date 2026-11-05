@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\Locale;
+use App\Http\Middleware\HandlePublicRequests;
 use App\Models\User;
 use App\Notifications\Accounts\SignInCodeNotification;
 use App\Services\Accounts\SignInCodeService;
@@ -10,9 +11,11 @@ use App\Services\Accounts\UserService;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
@@ -24,7 +27,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Registered before any provider boots, so it also applies to Fortify's routes.
+        $this->configureLocaleRoutes();
     }
 
     /**
@@ -33,8 +37,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
-        $this->configureLocalization();
-        $this->configureSsr();
+        $this->configureServerSideRendering();
         $this->configureSignIn();
     }
 
@@ -55,31 +58,31 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * At sign-in, the language used just before becomes the account language (SRS FR-06).
+     * Server-side render only the public pages (requests marked by HandlePublicRequests).
+     *
+     * The condition is evaluated per response, and a registered condition replaces the
+     * inertia.ssr.enabled config check, so that setting is honoured here as well.
      */
-    protected function configureLocalization(): void
+    protected function configureServerSideRendering(): void
     {
-        Event::listen(function (Login $event): void {
-            $cookie = request()->cookie(Locale::Cookie);
-            $locale = is_string($cookie) ? Locale::tryFrom($cookie) : null;
-
-            if ($locale !== null && $event->user instanceof User) {
-                app(UserService::class)->updateLocale($event->user, $locale);
-            }
-        });
+        Inertia::disableSsr(fn (): bool => ! config('inertia.ssr.enabled')
+            || request()->attributes->get(HandlePublicRequests::SSR_ATTRIBUTE) !== true);
     }
 
     /**
-     * Server-render the public portal only; /platform and the auth pages render client-side.
+     * Restrict every {locale} route segment (including Fortify's) to the supported locales.
      */
-    protected function configureSsr(): void
+    protected function configureLocaleRoutes(): void
     {
-        Inertia::disableSsr(fn (): bool => ! request()->is('public', 'public/*'));
+        /** @var list<string> $supportedLocales */
+        $supportedLocales = config('app.supported_locales');
+
+        Route::pattern('locale', implode('|', array_map(preg_quote(...), $supportedLocales)));
     }
 
     /**
-     * Sign-in side effects: a code's 5 minutes start at delivery, and every completed
-     * sign-in is stored as « Dernière connexion » (FR-02).
+     * Sign-in side effects (FR-02, FR-06): a code's 5 minutes start at delivery; every completed
+     * sign-in is stored as « Dernière connexion » and makes the language in use the account language.
      */
     protected function configureSignIn(): void
     {
@@ -90,8 +93,17 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Event::listen(function (Login $event): void {
-            if ($event->user instanceof User) {
-                app(UserService::class)->recordSignIn($event->user);
+            if (! $event->user instanceof User) {
+                return;
+            }
+
+            $userService = app(UserService::class);
+            $userService->recordSignIn($event->user);
+
+            $locale = Locale::tryFrom(App::getLocale());
+
+            if ($locale !== null) {
+                $userService->updateLocale($event->user, $locale);
             }
         });
     }

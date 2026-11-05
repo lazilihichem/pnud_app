@@ -365,7 +365,7 @@ class SignInTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('logout'));
 
-        $response->assertRedirect('/');
+        $response->assertRedirect('/fr');
         $this->assertGuest();
     }
 }

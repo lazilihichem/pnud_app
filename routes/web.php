@@ -1,120 +1,14 @@
 <?php
 
-use App\Enums\Locale;
-use App\Http\Controllers\Accounts\CancelSignInController;
-use App\Http\Controllers\Accounts\DeleteAccountController;
-use App\Http\Controllers\Accounts\EditProfileController;
-use App\Http\Controllers\Accounts\EditSecurityController;
-use App\Http\Controllers\Accounts\RegisterAccountController;
-use App\Http\Controllers\Accounts\ResendSignInCodeController;
-use App\Http\Controllers\Accounts\ShowRegistrationController;
-use App\Http\Controllers\Accounts\ShowSignInCodeController;
-use App\Http\Controllers\Accounts\UpdatePasswordController;
-use App\Http\Controllers\Accounts\UpdateProfileController;
-use App\Http\Controllers\Accounts\VerifySignInCodeController;
-use App\Http\Controllers\Operations\RedirectToLocaleController;
-use Illuminate\Auth\Middleware\RequirePassword;
+use App\Http\Middleware\EnsureAdminAccess;
+use App\Http\Middleware\EnsurePlatformAccess;
+use App\Http\Middleware\HandlePublicRequests;
+use App\Http\Middleware\SetLocale;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Areas
-|--------------------------------------------------------------------------
-|
-| /public/{locale}/…    public portal, server-rendered (SSR), open to visitors
-| /platform/{locale}/…  member spaces of signed-in users, client-rendered
-|
-| Auth pages (Fortify) stay unprefixed. A URL without a locale redirects to
-| the same path in the preferred language (account, cookie, then French).
-|
-*/
-
-$withoutLocale = '(?!(?:'.Locale::pattern().')(?:/|$)).*';
-
-Route::get('/', RedirectToLocaleController::class)->defaults('area', 'public');
-
-/*
-|--------------------------------------------------------------------------
-| Auth pages (unprefixed, next to Fortify's)
-|--------------------------------------------------------------------------
-*/
-
-// Accounts
-Route::middleware('guest')->group(function () {
-    Route::get('register', ShowRegistrationController::class)->name('register');
-    Route::post('register', RegisterAccountController::class)->name('register.store');
-
-    // E-mail code step of the sign-in (FR-02); the password step is Fortify's POST /login.
-    Route::get('login/code', ShowSignInCodeController::class)->name('login.code');
-    Route::post('login/code', VerifySignInCodeController::class)->middleware('throttle:10,1')->name('login.code.verify');
-    Route::post('login/code/resend', ResendSignInCodeController::class)->middleware('throttle:10,1')->name('login.code.resend');
-    Route::post('login/code/cancel', CancelSignInController::class)->name('login.code.cancel');
-});
-
-/*
-|--------------------------------------------------------------------------
-| Public portal
-|--------------------------------------------------------------------------
-*/
-
-Route::prefix('public/{locale}')
-    ->where(['locale' => Locale::pattern()])
-    ->name('public.')
-    ->group(function () {
-        Route::inertia('/', 'Welcome')->name('home');
-    });
-
-/*
-|--------------------------------------------------------------------------
-| Platform
-|--------------------------------------------------------------------------
-*/
-
-Route::prefix('platform/{locale}')
-    ->where(['locale' => Locale::pattern()])
-    ->name('platform.')
-    ->middleware('auth')
-    ->group(function () {
-        Route::get('/', fn () => to_route('platform.dashboard'))->name('home');
-
-        Route::middleware('verified')->group(function () {
-            Route::inertia('dashboard', 'Dashboard')->name('dashboard');
-        });
-
-        // Accounts
-        Route::get('settings', fn () => to_route('platform.profile.edit'));
-
-        Route::get('settings/profile', EditProfileController::class)->name('profile.edit');
-        Route::patch('settings/profile', UpdateProfileController::class)->name('profile.update');
-
-        Route::middleware('verified')->group(function () {
-            Route::delete('settings/profile', DeleteAccountController::class)->name('profile.destroy');
-
-            Route::get('settings/security', EditSecurityController::class)
-                ->middleware(RequirePassword::class)
-                ->name('security.edit');
-
-            Route::put('settings/password', UpdatePasswordController::class)
-                ->middleware('throttle:6,1')
-                ->name('user-password.update');
-
-            Route::inertia('settings/appearance', 'settings/Appearance')->name('appearance.edit');
-        });
-    });
-
-/*
-|--------------------------------------------------------------------------
-| URLs without a locale
-|--------------------------------------------------------------------------
-*/
-
-Route::get('public/{path?}', RedirectToLocaleController::class)
-    ->where('path', $withoutLocale)
-    ->defaults('area', 'public');
-
-Route::get('platform/{path?}', RedirectToLocaleController::class)
-    ->where('path', $withoutLocale)
-    ->defaults('area', 'platform');
+Route::get('/', fn (Request $request) => redirect('/'.SetLocale::resolveLocale($request)))
+    ->name('locale.redirect');
 
 Route::get('.well-known/passkey-endpoints', function () {
     return response()->json([
@@ -122,3 +16,25 @@ Route::get('.well-known/passkey-endpoints', function () {
         'manage' => route('platform.security.edit'),
     ]);
 })->name('well-known.passkeys');
+
+// Authentication pages (/{locale}/login, ...) are registered by Fortify (config/fortify.php);
+// the application's own guest pages (registration, e-mail code step) are in routes/auth.php.
+Route::prefix('{locale}')->group(function () {
+    // Platform and admin come first so a future public catch-all route
+    // such as /{locale}/{slug} cannot capture /{locale}/platform/...
+    Route::prefix('platform')
+        ->name('platform.')
+        ->middleware(EnsurePlatformAccess::class)
+        ->group(base_path('routes/platform.php'));
+
+    Route::prefix('admin')
+        ->name('admin.')
+        ->middleware(EnsureAdminAccess::class)
+        ->group(base_path('routes/admin.php'));
+
+    Route::middleware('guest')
+        ->group(base_path('routes/auth.php'));
+
+    Route::middleware(HandlePublicRequests::class)
+        ->group(base_path('routes/public.php'));
+});

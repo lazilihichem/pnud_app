@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { usePasskeyRegister } from '@laravel/passkeys/vue';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import InputError from '@/components/forms/InputError.vue';
 import { Button } from '@/components/basic/button';
 import { Input } from '@/components/basic/input';
 import { Label } from '@/components/basic/label';
+import { registrationOptions, store as storePasskey } from '@/routes/passkey';
+
+const { t } = useI18n();
 
 const emit = defineEmits<{
     success: [];
@@ -36,6 +40,11 @@ const name = ref(getDefaultPasskeyName());
 const showForm = ref(false);
 
 const { register, isLoading, error, isSupported } = usePasskeyRegister({
+    // Passkey endpoints live under /{locale}, not the library's unprefixed defaults.
+    routes: {
+        options: registrationOptions.url(),
+        submit: storePasskey.url(),
+    },
     onSuccess: () => {
         name.value = '';
         showForm.value = false;
@@ -61,11 +70,11 @@ const handleCancel = () => {
 
 <template>
     <div v-if="!isSupported" class="text-sm text-muted-foreground">
-        Passkeys are not supported in this browser.
+        {{ t('passkeys.notSupported') }}
     </div>
 
     <Button v-else-if="!showForm" variant="outline" @click="showForm = true">
-        Add passkey
+        {{ t('passkeys.add') }}
     </Button>
 
     <form
@@ -74,17 +83,17 @@ const handleCancel = () => {
         class="space-y-4 rounded-lg border border-border bg-muted/50 p-4"
     >
         <div class="grid gap-2">
-            <Label for="passkey-name">Passkey name</Label>
+            <Label for="passkey-name">{{ t('passkeys.nameLabel') }}</Label>
             <Input
                 id="passkey-name"
                 type="text"
                 v-model="name"
-                placeholder="e.g., MacBook Pro, iPhone"
+                :placeholder="t('passkeys.namePlaceholder')"
                 class="mt-1 block w-full border-foreground/20"
                 v-focus
             />
             <p class="text-xs text-muted-foreground">
-                A name helps you identify this passkey later.
+                {{ t('passkeys.nameHelp') }}
             </p>
         </div>
 
@@ -92,10 +101,14 @@ const handleCancel = () => {
 
         <div class="flex gap-2">
             <Button type="submit" :disabled="isLoading || !name.trim()">
-                {{ isLoading ? 'Registering...' : 'Register passkey' }}
+                {{
+                    isLoading
+                        ? t('passkeys.registering')
+                        : t('passkeys.register')
+                }}
             </Button>
             <Button type="button" variant="ghost" @click="handleCancel">
-                Cancel
+                {{ t('common.cancel') }}
             </Button>
         </div>
     </form>

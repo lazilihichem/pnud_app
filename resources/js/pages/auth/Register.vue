@@ -2,13 +2,14 @@
 // Functional stub for « Créer un compte » (FR-01). The design comes from the demo later.
 import { Form, Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import InputError from '@/components/forms/InputError.vue';
-import PasswordInput from '@/components/forms/PasswordInput.vue';
-import TextLink from '@/components/typography/TextLink.vue';
+import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/basic/button';
 import { Input } from '@/components/basic/input';
 import { Label } from '@/components/basic/label';
 import { Spinner } from '@/components/basic/spinner';
+import InputError from '@/components/forms/InputError.vue';
+import PasswordInput from '@/components/forms/PasswordInput.vue';
+import TextLink from '@/components/typography/TextLink.vue';
 import { login } from '@/routes';
 import { request } from '@/routes/password';
 import { store } from '@/routes/register';
@@ -23,10 +24,12 @@ defineProps<{
 
 defineOptions({
     layout: {
-        title: 'Créer un compte',
-        description: 'Choisissez votre profil et complétez vos informations.',
+        title: 'auth.register.title',
+        description: 'auth.register.description',
     },
 });
+
+const { t } = useI18n();
 
 // Switching profile unmounts the fields of the previous one, so they are never submitted.
 const role = ref('');
@@ -39,7 +42,7 @@ const selectClass =
 </script>
 
 <template>
-    <Head title="Créer un compte" />
+    <Head :title="t('auth.register.pageTitle')" />
 
     <Form
         v-bind="store.form()"
@@ -49,14 +52,16 @@ const selectClass =
     >
         <div class="grid gap-5">
             <div class="grid gap-2">
-                <Label for="role">Je suis *</Label>
+                <Label for="role">{{ t('auth.register.role') }} *</Label>
                 <select
                     id="role"
                     v-model="role"
                     name="role"
                     :class="selectClass"
                 >
-                    <option value="" disabled>Choisir un profil</option>
+                    <option value="" disabled>
+                        {{ t('auth.register.chooseRole') }}
+                    </option>
                     <option
                         v-for="option in roles"
                         :key="option.value"
@@ -69,7 +74,7 @@ const selectClass =
             </div>
 
             <div class="grid gap-2">
-                <Label for="name">Nom complet *</Label>
+                <Label for="name">{{ t('common.fullName') }} *</Label>
                 <Input
                     id="name"
                     name="name"
@@ -80,7 +85,7 @@ const selectClass =
             </div>
 
             <div class="grid gap-2">
-                <Label for="email">E-mail *</Label>
+                <Label for="email">{{ t('common.email') }} *</Label>
                 <Input
                     id="email"
                     type="email"
@@ -89,15 +94,19 @@ const selectClass =
                     maxlength="254"
                 />
                 <InputError :message="errors.email" />
-                <p v-if="errors.email?.includes('existe déjà')" class="text-sm">
-                    <TextLink :href="login()">Se connecter</TextLink>
+                <p v-if="errors.email" class="text-sm">
+                    <TextLink :href="login()">{{ t('common.logIn') }}</TextLink>
                     ·
-                    <TextLink :href="request()">Mot de passe oublié ?</TextLink>
+                    <TextLink :href="request()">{{
+                        t('auth.login.forgotPassword')
+                    }}</TextLink>
                 </p>
             </div>
 
             <div class="grid gap-2">
-                <Label for="organisation">Organisation</Label>
+                <Label for="organisation">{{
+                    t('auth.register.organisation')
+                }}</Label>
                 <Input
                     id="organisation"
                     name="organisation"
@@ -108,9 +117,11 @@ const selectClass =
             </div>
 
             <div class="grid gap-2">
-                <Label for="wilaya_id">Wilaya *</Label>
+                <Label for="wilaya_id">{{ t('auth.register.wilaya') }} *</Label>
                 <select id="wilaya_id" name="wilaya_id" :class="selectClass">
-                    <option value="">Choisir une wilaya</option>
+                    <option value="">
+                        {{ t('auth.register.chooseWilaya') }}
+                    </option>
                     <option
                         v-for="option in wilayas"
                         :key="option.value"
@@ -123,14 +134,18 @@ const selectClass =
             </div>
 
             <div v-if="role === 'accompagnateur'" class="grid gap-2">
-                <Label for="fonction">Fonction / spécialité *</Label>
+                <Label for="fonction"
+                    >{{ t('auth.register.fonction') }} *</Label
+                >
                 <Input id="fonction" name="fonction" maxlength="150" />
                 <InputError :message="errors.fonction" />
             </div>
 
             <div v-if="role === 'formateur'" class="grid gap-5">
                 <div class="grid gap-2">
-                    <Label for="linkedin_url">Profil LinkedIn</Label>
+                    <Label for="linkedin_url">{{
+                        t('auth.register.linkedin')
+                    }}</Label>
                     <Input
                         id="linkedin_url"
                         type="url"
@@ -142,13 +157,15 @@ const selectClass =
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="education">Formation / diplômes *</Label>
+                    <Label for="education"
+                        >{{ t('auth.register.education') }} *</Label
+                    >
                     <Input id="education" name="education" maxlength="300" />
                     <InputError :message="errors.education" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="cv">CV * (PDF, DOC, DOCX — 5 Mo maximum)</Label>
+                    <Label for="cv">{{ t('auth.register.cv') }} *</Label>
                     <input
                         id="cv"
                         type="file"
@@ -161,7 +178,7 @@ const selectClass =
             </div>
 
             <div class="grid gap-2">
-                <Label for="password">Mot de passe *</Label>
+                <Label for="password">{{ t('common.password') }} *</Label>
                 <PasswordInput
                     id="password"
                     name="password"
@@ -173,7 +190,7 @@ const selectClass =
 
             <div class="grid gap-2">
                 <Label for="password_confirmation"
-                    >Confirmer le mot de passe *</Label
+                    >{{ t('common.confirmPassword') }} *</Label
                 >
                 <PasswordInput
                     id="password_confirmation"
@@ -185,10 +202,7 @@ const selectClass =
 
             <label class="flex items-start gap-2 text-sm">
                 <input type="checkbox" name="terms" value="1" class="mt-1" />
-                <span
-                    >J'accepte les conditions d'utilisation et la politique de
-                    confidentialité *</span
-                >
+                <span>{{ t('auth.register.terms') }} *</span>
             </label>
             <InputError :message="errors.terms" />
 
@@ -199,15 +213,15 @@ const selectClass =
                 data-test="register-user-button"
             >
                 <Spinner v-if="processing" />
-                Créer mon compte
+                {{ t('auth.register.submit') }}
             </Button>
         </div>
 
         <div class="text-center text-sm text-muted-foreground">
-            Déjà inscrit ?
-            <TextLink :href="login()" class="underline underline-offset-4"
-                >Se connecter</TextLink
-            >
+            {{ t('auth.register.haveAccount') }}
+            <TextLink :href="login()" class="underline underline-offset-4">{{
+                t('common.logIn')
+            }}</TextLink>
         </div>
     </Form>
 </template>

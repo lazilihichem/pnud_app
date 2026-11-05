@@ -3,6 +3,7 @@
 // Every expiry and limit is enforced server-side; the countdown here is only a display.
 import { Form, Head } from '@inertiajs/vue3';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/basic/button';
 import {
     InputOTP,
@@ -21,11 +22,12 @@ const props = defineProps<{
 
 defineOptions({
     layout: {
-        title: 'Vérifiez votre adresse e-mail',
-        description:
-            'Saisissez le code à 6 chiffres envoyé par e-mail. Il est valable 5 minutes et ne sert qu’une fois.',
+        title: 'auth.signInCode.title',
+        description: 'auth.signInCode.description',
     },
 });
+
+const { t } = useI18n();
 
 const code = ref('');
 const secondsLeft = ref(props.resendAvailableIn);
@@ -44,18 +46,18 @@ const formatSeconds = (seconds: number): string =>
 </script>
 
 <template>
-    <Head title="Code de vérification" />
+    <Head :title="t('auth.signInCode.pageTitle')" />
 
     <div class="space-y-6">
         <p class="text-center text-sm text-muted-foreground">
-            Code envoyé à <strong>{{ email }}</strong>
+            {{ t('auth.signInCode.sentTo', { email }) }}
         </p>
 
         <p
             v-if="deliveryPending"
             class="rounded-md bg-amber-50 p-3 text-center text-sm text-amber-800"
         >
-            L’envoi du code prend plus de temps que prévu.
+            {{ t('auth.signInCode.deliveryPending') }}
         </p>
 
         <Form
@@ -92,7 +94,7 @@ const formatSeconds = (seconds: number): string =>
                 :disabled="processing || code.length !== 6"
             >
                 <Spinner v-if="processing" />
-                Valider
+                {{ t('auth.signInCode.submit') }}
             </Button>
         </Form>
 
@@ -110,16 +112,22 @@ const formatSeconds = (seconds: number): string =>
                     :disabled="processing || secondsLeft > 0"
                 >
                     <template v-if="secondsLeft > 0">
-                        Renvoyer le code dans {{ formatSeconds(secondsLeft) }}
+                        {{
+                            t('auth.signInCode.resendIn', {
+                                time: formatSeconds(secondsLeft),
+                            })
+                        }}
                     </template>
-                    <template v-else>Renvoyer le code</template>
+                    <template v-else>{{
+                        t('auth.signInCode.resend')
+                    }}</template>
                 </button>
                 <InputError :message="errors.code" />
             </Form>
 
             <Form v-bind="cancel.form()">
                 <button type="submit" class="underline underline-offset-4">
-                    Utiliser un autre compte
+                    {{ t('auth.signInCode.otherAccount') }}
                 </button>
             </Form>
         </div>

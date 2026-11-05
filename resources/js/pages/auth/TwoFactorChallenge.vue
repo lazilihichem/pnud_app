@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form, Head, setLayoutProps } from '@inertiajs/vue3';
 import { computed, ref, watchEffect } from 'vue';
+import { useI18n } from 'vue-i18n';
 import InputError from '@/components/forms/InputError.vue';
 import { Button } from '@/components/basic/button';
 import { Input } from '@/components/basic/input';
@@ -12,24 +13,24 @@ import {
 import { store } from '@/routes/two-factor/login';
 import type { TwoFactorConfigContent } from '@/types';
 
+const { t } = useI18n();
+
 const showRecoveryInput = ref<boolean>(false);
 const code = ref<string>('');
 
 const authConfigContent = computed<TwoFactorConfigContent>(() => {
     if (showRecoveryInput.value) {
         return {
-            title: 'Recovery code',
-            description:
-                'Please confirm access to your account by entering one of your emergency recovery codes.',
-            buttonText: 'login using an authentication code',
+            title: 'auth.twoFactorChallenge.recoveryTitle',
+            description: 'auth.twoFactorChallenge.recoveryDescription',
+            buttonText: 'auth.twoFactorChallenge.useAuthenticationCode',
         };
     }
 
     return {
-        title: 'Authentication code',
-        description:
-            'Enter the authentication code provided by your authenticator application.',
-        buttonText: 'login using a recovery code',
+        title: 'auth.twoFactorChallenge.codeTitle',
+        description: 'auth.twoFactorChallenge.codeDescription',
+        buttonText: 'auth.twoFactorChallenge.useRecoveryCode',
     };
 });
 
@@ -48,7 +49,7 @@ const toggleRecoveryMode = (clearErrors: () => void): void => {
 </script>
 
 <template>
-    <Head title="Two-factor authentication" />
+    <Head :title="t('auth.twoFactorChallenge.pageTitle')" />
 
     <div class="space-y-6">
         <template v-if="!showRecoveryInput">
@@ -66,6 +67,7 @@ const toggleRecoveryMode = (clearErrors: () => void): void => {
                     <div class="flex w-full items-center justify-center">
                         <InputOTP
                             id="otp"
+                            dir="ltr"
                             v-model="code"
                             :maxlength="6"
                             :disabled="processing"
@@ -82,17 +84,17 @@ const toggleRecoveryMode = (clearErrors: () => void): void => {
                     </div>
                     <InputError :message="errors.code" />
                 </div>
-                <Button type="submit" class="w-full" :disabled="processing"
-                    >Continue</Button
-                >
+                <Button type="submit" class="w-full" :disabled="processing">{{
+                    t('common.continue')
+                }}</Button>
                 <div class="text-center text-sm text-muted-foreground">
-                    <span>or you can </span>
+                    <span>{{ t('auth.twoFactorChallenge.orYouCan') }} </span>
                     <button
                         type="button"
                         class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                         @click="() => toggleRecoveryMode(clearErrors)"
                     >
-                        {{ authConfigContent.buttonText }}
+                        {{ t(authConfigContent.buttonText) }}
                     </button>
                 </div>
             </Form>
@@ -108,23 +110,25 @@ const toggleRecoveryMode = (clearErrors: () => void): void => {
                 <Input
                     name="recovery_code"
                     type="text"
-                    placeholder="Enter recovery code"
+                    :placeholder="
+                        t('auth.twoFactorChallenge.recoveryPlaceholder')
+                    "
                     v-focus
                     required
                 />
                 <InputError :message="errors.recovery_code" />
-                <Button type="submit" class="w-full" :disabled="processing"
-                    >Continue</Button
-                >
+                <Button type="submit" class="w-full" :disabled="processing">{{
+                    t('common.continue')
+                }}</Button>
 
                 <div class="text-center text-sm text-muted-foreground">
-                    <span>or you can </span>
+                    <span>{{ t('auth.twoFactorChallenge.orYouCan') }} </span>
                     <button
                         type="button"
                         class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                         @click="() => toggleRecoveryMode(clearErrors)"
                     >
-                        {{ authConfigContent.buttonText }}
+                        {{ t(authConfigContent.buttonText) }}
                     </button>
                 </div>
             </Form>

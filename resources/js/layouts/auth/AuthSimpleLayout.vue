@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import AppLogoIcon from '@/components/layout/AppLogoIcon.vue';
-import { home } from '@/routes/public';
+import LanguageSwitcher from '@/components/layout/LanguageSwitcher.vue';
+import { home } from '@/routes';
 
 defineProps<{
     title?: string;
@@ -11,8 +12,9 @@ defineProps<{
 
 <template>
     <div
-        class="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10"
+        class="relative flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10"
     >
+        <LanguageSwitcher class="absolute end-6 top-6 md:end-10" />
         <div class="w-full max-w-sm">
             <div class="flex flex-col gap-8">
                 <div class="flex flex-col items-center gap-4">

@@ -8,7 +8,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/basic/card';
-import { home } from '@/routes/public';
+import { home } from '@/routes';
 
 defineProps<{
     title?: string;

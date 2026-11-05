@@ -5,8 +5,9 @@
 | Accounts & Access (Module 01) — SRS screen texts
 |--------------------------------------------------------------------------
 |
-| French is the source language and the fallback: a key missing from
-| lang/ar is shown in French until the client supplies the translation.
+| French is the source language. Every key must also exist in
+| lang/ar/accounts.php: the fallback locale is 'en', which has no
+| accounts file, so a missing Arabic key would show as a raw key.
 |
 */
 
@@ -20,6 +21,7 @@ return [
     ],
 
     'sign_in' => [
+        'invalid_credentials' => 'Adresse e-mail ou mot de passe incorrect.',
         'suspended' => 'Votre compte est suspendu. Contactez l\'équipe de la plateforme.',
         'refused' => 'Votre inscription n\'a pas été retenue. :reason',
         'throttled' => 'Trop de tentatives. Patientez :seconds secondes avant de réessayer.',

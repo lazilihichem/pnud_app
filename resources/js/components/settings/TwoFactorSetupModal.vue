@@ -3,6 +3,7 @@ import { Form } from '@inertiajs/vue3';
 import { useClipboard } from '@vueuse/core';
 import { Check, Copy, ScanLine } from '@lucide/vue';
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import AlertError from '@/components/forms/AlertError.vue';
 import InputError from '@/components/forms/InputError.vue';
 import { Button } from '@/components/basic/button';
@@ -30,6 +31,7 @@ type Props = {
 };
 
 const { resolvedAppearance } = useAppearance();
+const { t } = useI18n();
 
 const props = defineProps<Props>();
 const isOpen = defineModel<boolean>('isOpen');
@@ -46,26 +48,24 @@ const pinInputContainerRef = useTemplateRef('pinInputContainerRef');
 const modalConfig = computed<TwoFactorConfigContent>(() => {
     if (props.twoFactorEnabled) {
         return {
-            title: 'Two-factor authentication enabled',
-            description:
-                'Two-factor authentication is now enabled. Scan the QR code or enter the setup key in your authenticator app.',
-            buttonText: 'Close',
+            title: 'settings.twoFactor.enabledTitle',
+            description: 'settings.twoFactor.enabledDescription',
+            buttonText: 'common.close',
         };
     }
 
     if (showVerificationStep.value) {
         return {
-            title: 'Verify authentication code',
-            description: 'Enter the 6-digit code from your authenticator app',
-            buttonText: 'Continue',
+            title: 'settings.twoFactor.verifyTitle',
+            description: 'settings.twoFactor.verifyDescription',
+            buttonText: 'common.continue',
         };
     }
 
     return {
-        title: 'Enable two-factor authentication',
-        description:
-            'To finish enabling two-factor authentication, scan the QR code or enter the setup key in your authenticator app',
-        buttonText: 'Continue',
+        title: 'settings.twoFactor.enableTitle',
+        description: 'settings.twoFactor.enableDescription',
+        buttonText: 'common.continue',
     };
 });
 
@@ -125,7 +125,7 @@ watch(
                             <div
                                 v-for="i in 5"
                                 :key="`col-${i}`"
-                                class="border-r border-border last:border-r-0"
+                                class="border-e border-border last:border-e-0"
                             />
                         </div>
                         <div
@@ -142,9 +142,9 @@ watch(
                         />
                     </div>
                 </div>
-                <DialogTitle>{{ modalConfig.title }}</DialogTitle>
+                <DialogTitle>{{ t(modalConfig.title) }}</DialogTitle>
                 <DialogDescription class="text-center">
-                    {{ modalConfig.description }}
+                    {{ t(modalConfig.description) }}
                 </DialogDescription>
             </DialogHeader>
 
@@ -186,7 +186,7 @@ watch(
 
                         <div class="flex w-full items-center space-x-5">
                             <Button class="w-full" @click="handleModalNextStep">
-                                {{ modalConfig.buttonText }}
+                                {{ t(modalConfig.buttonText) }}
                             </Button>
                         </div>
 
@@ -196,9 +196,9 @@ watch(
                             <div
                                 class="absolute inset-0 top-1/2 h-px w-full bg-border"
                             />
-                            <span class="relative bg-card px-2 py-1"
-                                >or, enter the code manually</span
-                            >
+                            <span class="relative bg-card px-2 py-1">{{
+                                t('settings.twoFactor.manualEntry')
+                            }}</span>
                         </div>
 
                         <div
@@ -218,11 +218,12 @@ watch(
                                         type="text"
                                         readonly
                                         :value="manualSetupKey"
+                                        dir="ltr"
                                         class="h-full w-full bg-background p-3 text-foreground"
                                     />
                                     <button
                                         @click="copy(manualSetupKey || '')"
-                                        class="relative block h-auto border-l border-border px-3 hover:bg-muted"
+                                        class="relative block h-auto border-s border-border px-3 hover:bg-muted"
                                     >
                                         <Check
                                             v-if="copied"
@@ -255,6 +256,7 @@ watch(
                             >
                                 <InputOTP
                                     id="otp"
+                                    dir="ltr"
                                     v-model="code"
                                     :maxlength="6"
                                     :disabled="processing"
@@ -279,14 +281,14 @@ watch(
                                     @click="showVerificationStep = false"
                                     :disabled="processing"
                                 >
-                                    Back
+                                    {{ t('common.back') }}
                                 </Button>
                                 <Button
                                     type="submit"
                                     class="w-auto flex-1"
                                     :disabled="processing || code.length < 6"
                                 >
-                                    Confirm
+                                    {{ t('common.confirm') }}
                                 </Button>
                             </div>
                         </div>

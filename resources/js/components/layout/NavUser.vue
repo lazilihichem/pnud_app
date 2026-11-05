@@ -15,10 +15,17 @@ import {
 } from '@/components/basic/sidebar';
 import UserInfo from '@/components/layout/UserInfo.vue';
 import UserMenuContent from '@/components/layout/UserMenuContent.vue';
+import { useLocale } from '@/composables/useLocale';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 const { isMobile, state } = useSidebar();
+
+// Mirror the collapsed-sidebar menu placement in right-to-left locales.
+const { direction } = useLocale();
+const collapsedSide = computed(() =>
+    direction.value === 'rtl' ? 'right' : 'left',
+);
 </script>
 
 <template>
@@ -32,7 +39,7 @@ const { isMobile, state } = useSidebar();
                         data-test="sidebar-menu-button"
                     >
                         <UserInfo :user="user" />
-                        <ChevronsUpDown class="ml-auto size-4" />
+                        <ChevronsUpDown class="ms-auto size-4" />
                     </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -41,7 +48,7 @@ const { isMobile, state } = useSidebar();
                         isMobile
                             ? 'bottom'
                             : state === 'collapsed'
-                              ? 'left'
+                              ? collapsedSide
                               : 'bottom'
                     "
                     align="end"

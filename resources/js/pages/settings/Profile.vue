@@ -2,6 +2,7 @@
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import UpdateProfileController from '@/actions/App/Http/Controllers/Accounts/UpdateProfileController';
 import DeleteUser from '@/components/settings/DeleteUser.vue';
 import Heading from '@/components/typography/Heading.vue';
@@ -16,7 +17,7 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Profile settings',
+                title: 'settings.profile.pageTitle',
                 href: edit(),
             },
         ],
@@ -25,18 +26,19 @@ defineOptions({
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+const { t } = useI18n();
 </script>
 
 <template>
-    <Head title="Profile settings" />
+    <Head :title="t('settings.profile.pageTitle')" />
 
-    <h1 class="sr-only">Profile settings</h1>
+    <h1 class="sr-only">{{ t('settings.profile.pageTitle') }}</h1>
 
     <div class="flex flex-col space-y-6">
         <Heading
             variant="small"
-            title="Profile"
-            description="Update your name and email address"
+            :title="t('settings.profile.title')"
+            :description="t('settings.profile.description')"
         />
 
         <Form
@@ -45,7 +47,7 @@ const user = computed(() => page.props.auth.user);
             v-slot="{ errors, processing }"
         >
             <div class="grid gap-2">
-                <Label for="name">Name</Label>
+                <Label for="name">{{ t('common.name') }}</Label>
                 <Input
                     id="name"
                     class="mt-1 block w-full"
@@ -53,13 +55,13 @@ const user = computed(() => page.props.auth.user);
                     :default-value="user.name"
                     required
                     autocomplete="name"
-                    placeholder="Full name"
+                    :placeholder="t('common.fullName')"
                 />
                 <InputError class="mt-2" :message="errors.name" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="email">Email address</Label>
+                <Label for="email">{{ t('common.emailAddress') }}</Label>
                 <Input
                     id="email"
                     type="email"
@@ -68,20 +70,20 @@ const user = computed(() => page.props.auth.user);
                     :default-value="user.email"
                     required
                     autocomplete="username"
-                    placeholder="Email address"
+                    :placeholder="t('common.emailAddress')"
                 />
                 <InputError class="mt-2" :message="errors.email" />
             </div>
 
             <div v-if="page.props.mustVerifyEmail && !user.email_verified_at">
                 <p class="-mt-4 text-sm text-muted-foreground">
-                    Your email address is unverified.
+                    {{ t('settings.profile.unverified') }}
                     <Link
                         :href="send()"
                         as="button"
                         class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                     >
-                        Click here to re-send the verification email.
+                        {{ t('settings.profile.resendVerification') }}
                     </Link>
                 </p>
 
@@ -89,13 +91,15 @@ const user = computed(() => page.props.auth.user);
                     v-if="page.props.status === 'verification-link-sent'"
                     class="mt-2 text-sm font-medium text-green-600"
                 >
-                    A new verification link has been sent to your email address.
+                    {{ t('settings.profile.linkSent') }}
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <Button :disabled="processing" data-test="update-profile-button"
-                    >Save</Button
+                <Button
+                    :disabled="processing"
+                    data-test="update-profile-button"
+                    >{{ t('common.save') }}</Button
                 >
             </div>
         </Form>

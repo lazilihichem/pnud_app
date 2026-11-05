@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import PlaceholderPattern from '@/components/dashboard/PlaceholderPattern.vue';
 import { dashboard } from '@/routes/platform';
 
@@ -7,16 +8,18 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Dashboard',
+                title: 'nav.dashboard',
                 href: dashboard(),
             },
         ],
     },
 });
+
+const { t } = useI18n();
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head :title="t('nav.dashboard')" />
 
     <div
         class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"

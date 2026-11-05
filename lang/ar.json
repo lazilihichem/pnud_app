@@ -1,0 +1,22 @@
+{
+    "Invalid credential format.": "صيغة بيانات الاعتماد غير صالحة.",
+    "Passkey not recognized. It may have been removed from your account.": "مفتاح المرور غير معروف. ربما تمت إزالته من حسابك.",
+    "Passkey registration session expired. Please try again.": "انتهت صلاحية جلسة تسجيل مفتاح المرور. يرجى المحاولة مرة أخرى.",
+    "Passkey verification session expired. Please try again.": "انتهت صلاحية جلسة التحقق من مفتاح المرور. يرجى المحاولة مرة أخرى.",
+    "Unable to register passkey. Please try again.": "تعذر تسجيل مفتاح المرور. يرجى المحاولة مرة أخرى.",
+    "Unable to register this passkey.": "تعذر تسجيل مفتاح المرور هذا.",
+    "Unable to verify passkey. Please try again.": "تعذر التحقق من مفتاح المرور. يرجى المحاولة مرة أخرى.",
+    "Password updated.": "تم تحديث كلمة المرور.",
+    "Profile updated.": "تم تحديث الملف الشخصي.",
+    "The provided password was incorrect.": "كلمة المرور المقدمة غير صحيحة.",
+    "The provided two factor authentication code was invalid.": "رمز المصادقة الثنائية المقدم غير صالح.",
+    "The provided two factor recovery code was invalid.": "رمز الاسترداد المقدم غير صالح.",
+    "The :attribute must be at least :length characters.": "يجب أن يتكون حقل :attribute من :length أحرف على الأقل.",
+    "The :attribute must be at least :length characters and contain at least one number.": "يجب أن يتكون حقل :attribute من :length أحرف على الأقل وأن يحتوي على رقم واحد على الأقل.",
+    "The :attribute must be at least :length characters and contain at least one special character.": "يجب أن يتكون حقل :attribute من :length أحرف على الأقل وأن يحتوي على رمز خاص واحد على الأقل.",
+    "The :attribute must be at least :length characters and contain at least one special character and one number.": "يجب أن يتكون حقل :attribute من :length أحرف على الأقل وأن يحتوي على رمز خاص ورقم على الأقل.",
+    "The :attribute must be at least :length characters and contain at least one uppercase character.": "يجب أن يتكون حقل :attribute من :length أحرف على الأقل وأن يحتوي على حرف كبير واحد على الأقل.",
+    "The :attribute must be at least :length characters and contain at least one uppercase character and one number.": "يجب أن يتكون حقل :attribute من :length أحرف على الأقل وأن يحتوي على حرف كبير ورقم على الأقل.",
+    "The :attribute must be at least :length characters and contain at least one uppercase character and one special character.": "يجب أن يتكون حقل :attribute من :length أحرف على الأقل وأن يحتوي على حرف كبير ورمز خاص على الأقل.",
+    "The :attribute must be at least :length characters and contain at least one uppercase character, one number, and one special character.": "يجب أن يتكون حقل :attribute من :length أحرف على الأقل وأن يحتوي على حرف كبير ورقم ورمز خاص على الأقل."
+}

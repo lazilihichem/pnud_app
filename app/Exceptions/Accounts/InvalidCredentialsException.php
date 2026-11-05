@@ -13,6 +13,6 @@ class InvalidCredentialsException extends DomainException
 
     public function __construct()
     {
-        parent::__construct('auth.failed');
+        parent::__construct('accounts.sign_in.invalid_credentials');
     }
 }
