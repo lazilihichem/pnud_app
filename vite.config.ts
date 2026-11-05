@@ -39,6 +39,9 @@ export default defineConfig({
         }),
     ]),
     server: {
+        // Lets the app container reach the dev server as http://vite:5173 for SSR
+        // (INERTIA_SSR_HOT_URL in compose.yaml).
+        allowedHosts: ['vite'],
         watch: {
             ignored: [
                 '**/.agents/**',

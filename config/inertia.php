@@ -18,6 +18,9 @@ return [
     'ssr' => [
         'enabled' => (bool) env('INERTIA_SSR_ENABLED', true),
         'url' => env('INERTIA_SSR_URL', 'http://127.0.0.1:13714'),
+        // Vite dev server URL for SSR while `npm run dev` runs. Falls back to public/hot,
+        // which holds the browser-facing URL and is unreachable from another container.
+        'hot_url' => env('INERTIA_SSR_HOT_URL'),
         // 'bundle' => base_path('bootstrap/ssr/ssr.mjs'),
 
     ],
