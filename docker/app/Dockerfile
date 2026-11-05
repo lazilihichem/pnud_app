@@ -8,7 +8,8 @@ COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /u
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git unzip postgresql-client \
     && install-php-extensions pdo_pgsql pgsql intl zip bcmath pcntl gd opcache \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && echo "memory_limit=512M" > /usr/local/etc/php/conf.d/memory-limit.ini
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer

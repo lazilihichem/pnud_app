@@ -92,6 +92,9 @@ export default defineConfig({
             // Third-party AI skills/guidelines (managed by `boost:add-skill` / `boost:update`)
             '.ai/**',
             '.github/**',
+            // Project documentation, kept exactly as written
+            'ERD.html',
+            'SRS.md',
             'composer.json',
             'resources/js/components/ui/*',
             'resources/views/mail/*',
