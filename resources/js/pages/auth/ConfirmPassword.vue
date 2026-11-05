@@ -17,6 +17,7 @@ defineOptions({
     layout: {
         title: 'auth.confirmPassword.title',
         description: 'auth.confirmPassword.description',
+        icon: 'shield',
     },
 });
 

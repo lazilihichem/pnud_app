@@ -11,9 +11,16 @@ export default defineConfig({
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.ts'],
             refresh: true,
+            // ESS fonts (Pnud-demo tokens). Downloaded at build time and served from
+            // public/build: no visitor request goes to a foreign service (SRS 5.5).
             fonts: [
-                bunny('Instrument Sans', {
-                    weights: [400, 500, 600],
+                bunny('Poppins', {
+                    weights: [400, 500, 600, 700],
+                    subsets: ['latin', 'latin-ext'],
+                }),
+                bunny('IBM Plex Sans Arabic', {
+                    weights: [400, 500, 600, 700],
+                    subsets: ['arabic'],
                 }),
             ],
         }),

@@ -1,4 +1,3 @@
-// ESS basic layer over the shadcn-vue `input` primitive (reka-ui).
-// Pass-through for now: to adapt it to the ESS design, add a wrapper .vue in this
-// folder and export it here instead. Feature code imports from here, never from ui/.
-export * from '@/components/ui/input';
+// ESS basic input over the shadcn-vue `input` primitive: 44px, white field with a
+// visible border, sky focus ring, wine error state (Pnud-demo .input).
+export { default as Input } from './Input.vue';

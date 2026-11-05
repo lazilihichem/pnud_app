@@ -11,6 +11,7 @@ defineOptions({
     layout: {
         title: 'auth.verifyEmail.title',
         description: 'auth.verifyEmail.description',
+        icon: 'mail',
     },
 });
 

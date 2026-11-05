@@ -14,6 +14,7 @@ defineOptions({
     layout: {
         title: 'auth.resetPassword.title',
         description: 'auth.resetPassword.description',
+        icon: 'lock',
     },
 });
 

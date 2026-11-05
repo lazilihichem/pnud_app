@@ -1,4 +1,4 @@
-// ESS basic layer over the shadcn-vue `alert` primitive (reka-ui).
-// Pass-through for now: to adapt it to the ESS design, add a wrapper .vue in this
-// folder and export it here instead. Feature code imports from here, never from ui/.
-export * from '@/components/ui/alert';
+// ESS basic note over the shadcn-vue `alert` primitive: a tinted callout, no coloured
+// side border (DESIGN.md « notes »); the tone colours the background and the icon only.
+export { AlertDescription, AlertTitle } from '@/components/ui/alert';
+export { default as Alert } from './Alert.vue';

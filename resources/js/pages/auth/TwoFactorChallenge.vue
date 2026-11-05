@@ -38,6 +38,7 @@ watchEffect(() => {
     setLayoutProps({
         title: authConfigContent.value.title,
         description: authConfigContent.value.description,
+        icon: 'shield',
     });
 });
 

@@ -14,6 +14,7 @@ defineOptions({
     layout: {
         title: 'auth.forgotPassword.title',
         description: 'auth.forgotPassword.description',
+        icon: 'key',
     },
 });
 

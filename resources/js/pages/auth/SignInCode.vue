@@ -4,6 +4,8 @@
 import { Form, Head } from '@inertiajs/vue3';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { Check } from '@lucide/vue';
+import { Alert, AlertDescription } from '@/components/basic/alert';
 import { Button } from '@/components/basic/button';
 import {
     InputOTP,
@@ -24,6 +26,8 @@ defineOptions({
     layout: {
         title: 'auth.signInCode.title',
         description: 'auth.signInCode.description',
+        breadcrumb: 'auth.signInCode.pageTitle',
+        icon: 'mail',
     },
 });
 
@@ -48,21 +52,22 @@ const formatSeconds = (seconds: number): string =>
 <template>
     <Head :title="t('auth.signInCode.pageTitle')" />
 
-    <div class="space-y-6">
-        <p class="text-center text-sm text-muted-foreground">
-            {{ t('auth.signInCode.sentTo', { email }) }}
-        </p>
+    <div class="grid gap-5">
+        <i18n-t keypath="auth.signInCode.sentTo" tag="p" class="text-ess-slate">
+            <template #email>
+                <strong class="font-semibold text-ess-ink">{{ email }}</strong>
+            </template>
+        </i18n-t>
 
-        <p
-            v-if="deliveryPending"
-            class="rounded-md bg-amber-50 p-3 text-center text-sm text-amber-800"
-        >
-            {{ t('auth.signInCode.deliveryPending') }}
-        </p>
+        <Alert v-if="deliveryPending" tone="warning">
+            <AlertDescription>{{
+                t('auth.signInCode.deliveryPending')
+            }}</AlertDescription>
+        </Alert>
 
         <Form
             v-bind="verify.form()"
-            class="space-y-4"
+            class="grid gap-4"
             reset-on-error
             @error="code = ''"
             #default="{ errors, processing }"
@@ -77,12 +82,14 @@ const formatSeconds = (seconds: number): string =>
                     autocomplete="one-time-code"
                     inputmode="numeric"
                     autofocus
+                    dir="ltr"
                 >
                     <InputOTPGroup>
                         <InputOTPSlot
                             v-for="index in 6"
                             :key="index"
                             :index="index - 1"
+                            :aria-invalid="errors.code ? true : undefined"
                         />
                     </InputOTPGroup>
                 </InputOTP>
@@ -90,25 +97,27 @@ const formatSeconds = (seconds: number): string =>
             </div>
             <Button
                 type="submit"
-                class="w-full"
+                block
+                diamond
                 :disabled="processing || code.length !== 6"
             >
                 <Spinner v-if="processing" />
+                <Check v-else class="size-4" aria-hidden="true" />
                 {{ t('auth.signInCode.submit') }}
             </Button>
         </Form>
 
         <div
-            class="flex items-center justify-between gap-4 text-sm text-muted-foreground"
+            class="flex flex-wrap items-start justify-center gap-x-6 gap-y-2 text-sm"
         >
             <Form
                 v-bind="resend.form()"
                 #default="{ errors, processing }"
-                class="flex flex-col"
+                class="flex flex-col items-center"
             >
                 <button
                     type="submit"
-                    class="text-left underline underline-offset-4 disabled:no-underline disabled:opacity-60"
+                    class="font-medium text-ess-blue hover:underline disabled:cursor-default disabled:text-ess-slate disabled:no-underline"
                     :disabled="processing || secondsLeft > 0"
                 >
                     <template v-if="secondsLeft > 0">
@@ -126,7 +135,10 @@ const formatSeconds = (seconds: number): string =>
             </Form>
 
             <Form v-bind="cancel.form()">
-                <button type="submit" class="underline underline-offset-4">
+                <button
+                    type="submit"
+                    class="font-medium text-ess-blue hover:underline"
+                >
                     {{ t('auth.signInCode.otherAccount') }}
                 </button>
             </Form>
