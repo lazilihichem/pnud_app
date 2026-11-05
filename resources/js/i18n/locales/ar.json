@@ -15,6 +15,8 @@
         "confirmPassword": "تأكيد كلمة المرور",
         "showPassword": "إظهار كلمة المرور",
         "hidePassword": "إخفاء كلمة المرور",
+        "show": "إظهار",
+        "hide": "إخفاء",
         "logIn": "تسجيل الدخول",
         "logOut": "تسجيل الخروج",
         "register": "إنشاء حساب",
@@ -152,8 +154,7 @@
         "description": "إدارة ملفك الشخصي وإعدادات حسابك",
         "nav": {
             "profile": "الملف الشخصي",
-            "security": "الأمان",
-            "appearance": "المظهر"
+            "security": "الأمان"
         },
         "profile": {
             "pageTitle": "إعدادات الملف الشخصي",
@@ -169,13 +170,6 @@
             "updatePasswordDescription": "تأكد من أن حسابك يستخدم كلمة مرور طويلة وعشوائية للحفاظ على أمانه",
             "currentPassword": "كلمة المرور الحالية",
             "newPassword": "كلمة المرور الجديدة"
-        },
-        "appearance": {
-            "pageTitle": "إعدادات المظهر",
-            "description": "تحديث إعدادات المظهر لحسابك",
-            "light": "فاتح",
-            "dark": "داكن",
-            "system": "النظام"
         },
         "deleteAccount": {
             "title": "حذف الحساب",

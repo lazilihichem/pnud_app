@@ -34,7 +34,7 @@ const hrefFor = (target: Locale): string | undefined =>
                 aria-current="true"
                 :class="
                     cn(
-                        'bg-ess-blue px-3 py-1.5 text-xs font-bold text-white',
+                        'bg-ess-blue px-[0.75em] py-[0.4em] text-xs font-bold text-white',
                         props.wide &&
                             'flex-1 rounded-full py-2.5 text-center text-sm',
                     )
@@ -50,7 +50,7 @@ const hrefFor = (target: Locale): string | undefined =>
                 :title="t(`language.${option}`)"
                 :class="
                     cn(
-                        'px-3 py-1.5 text-xs font-bold text-ess-slate hover:bg-ess-mist hover:text-ess-blue',
+                        'px-[0.75em] py-[0.4em] text-xs font-bold text-ess-slate hover:bg-ess-mist hover:text-ess-blue',
                         props.wide &&
                             'flex-1 rounded-full border border-ess-line py-2.5 text-center text-sm',
                     )

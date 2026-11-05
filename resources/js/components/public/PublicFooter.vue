@@ -19,7 +19,7 @@ const scrollToTop = (): void => {
 <template>
     <footer class="bg-ess-blue-900 text-[#c6d8e8]">
         <div
-            class="mx-auto grid max-w-[1200px] gap-x-12 gap-y-8 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-10"
+            class="mx-auto grid max-w-[1200px] gap-x-12 gap-y-8 px-5 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-10"
             :aria-label="t('public.footer.sitemapLabel')"
         >
             <div v-for="(column, index) in footerColumns" :key="index">
@@ -44,7 +44,8 @@ const scrollToTop = (): void => {
                     </li>
                 </ul>
             </div>
-            <div class="text-sm text-[#93b0c8]">
+            <!-- Phones: identity first, before the site map (demo mobile footer). -->
+            <div class="order-first text-sm text-[#93b0c8] md:order-none">
                 <div class="mb-4 inline-flex rounded-md bg-white p-4">
                     <img
                         src="/images/logo-ess.jpg"
@@ -76,11 +77,12 @@ const scrollToTop = (): void => {
 
         <div class="bg-white py-5">
             <div
-                class="mx-auto flex max-w-[1200px] flex-wrap items-center gap-x-12 gap-y-5 px-4 sm:px-6 lg:px-10"
+                class="mx-auto flex max-w-[1200px] flex-wrap items-center gap-x-8 gap-y-5 px-5 sm:px-6 md:gap-x-12 lg:px-10"
             >
-                <span class="max-w-48 text-sm font-semibold text-[#12212e]">{{
-                    t('public.footer.fundedBy')
-                }}</span>
+                <span
+                    class="basis-full text-sm font-semibold text-[#12212e] md:basis-auto"
+                    >{{ t('public.footer.fundedBy') }}</span
+                >
                 <img
                     src="/images/partners/union-europeenne.webp"
                     :alt="t('public.footer.euAlt')"
@@ -100,7 +102,7 @@ const scrollToTop = (): void => {
         </div>
 
         <div
-            class="mx-auto flex max-w-[1200px] items-center justify-end px-4 py-5 sm:px-6 lg:px-10"
+            class="mx-auto flex max-w-[1200px] items-center justify-end px-5 py-5 sm:px-6 lg:px-10"
         >
             <button
                 type="button"

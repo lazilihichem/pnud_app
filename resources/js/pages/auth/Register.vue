@@ -44,6 +44,14 @@ const { locale } = useLocale();
 // Switching profile unmounts the fields of the previous one, so they are never submitted.
 const role = ref('');
 
+// The tile beside the profile select (demo .select-3d): one pictogram per profile.
+const roleEmoji: Record<string, string> = {
+    entrepreneur: '🌱',
+    accompagnateur: '🤝',
+    formateur: '🎓',
+    citoyen: '🫶',
+};
+
 // Bound from script: a literal "https://" in a template attribute breaks vue-tsc's slot scope.
 const linkedinPlaceholder = 'https://www.linkedin.com/in/…';
 </script>
@@ -67,24 +75,34 @@ const linkedinPlaceholder = 'https://www.linkedin.com/in/…';
                         >— {{ t('auth.register.roleHintFirst') }}</span
                     ></Label
                 >
-                <NativeSelect
-                    id="role"
-                    v-model="role"
-                    name="role"
-                    class="h-[60px]"
-                    :aria-invalid="errors.role ? true : undefined"
-                >
-                    <option value="" disabled>
-                        {{ t('auth.register.chooseRole') }}
-                    </option>
-                    <option
-                        v-for="option in roles"
-                        :key="option.value"
-                        :value="option.value"
+                <div class="flex items-center gap-3">
+                    <span
+                        :key="role"
+                        class="grid size-[60px] flex-none animate-in place-items-center rounded-md border-[1.5px] border-ess-line-strong bg-[radial-gradient(circle_at_30%_25%,var(--ess-paper),var(--ess-mist-200))] text-[2rem] leading-none shadow-[inset_0_-3px_6px_rgb(18_33_46/0.08),0_3px_8px_rgb(18_33_46/0.10)] duration-200 zoom-in-90"
+                        aria-hidden="true"
+                        >{{ roleEmoji[role] ?? '👤' }}</span
                     >
-                        {{ option.label }}
-                    </option>
-                </NativeSelect>
+                    <div class="min-w-0 flex-1">
+                        <NativeSelect
+                            id="role"
+                            v-model="role"
+                            name="role"
+                            class="h-[60px]"
+                            :aria-invalid="errors.role ? true : undefined"
+                        >
+                            <option value="" disabled>
+                                {{ t('auth.register.chooseRole') }}
+                            </option>
+                            <option
+                                v-for="option in roles"
+                                :key="option.value"
+                                :value="option.value"
+                            >
+                                {{ option.label }}
+                            </option>
+                        </NativeSelect>
+                    </div>
+                </div>
                 <p class="text-xs text-ess-slate">
                     {{ t('auth.register.roleHint') }}
                 </p>
@@ -227,6 +245,7 @@ const linkedinPlaceholder = 'https://www.linkedin.com/in/…';
                     name="password"
                     autocomplete="new-password"
                     maxlength="64"
+                    toggle="text"
                     aria-describedby="password-hint"
                     :passwordrules="passwordRules"
                     :aria-invalid="errors.password ? true : undefined"
@@ -246,6 +265,7 @@ const linkedinPlaceholder = 'https://www.linkedin.com/in/…';
                     name="password_confirmation"
                     autocomplete="new-password"
                     maxlength="64"
+                    toggle="none"
                     :passwordrules="passwordRules"
                 />
             </div>

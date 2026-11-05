@@ -34,7 +34,7 @@ const { locale, direction } = useLocale();
             <Button
                 variant="outline"
                 size="icon"
-                class="rounded-full text-ess-ink"
+                class="rounded-full border-ess-line text-ess-ink md:size-[42px]"
                 :aria-label="t('public.header.openMenu')"
             >
                 <Menu class="size-5" />

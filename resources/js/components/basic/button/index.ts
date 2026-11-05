@@ -12,8 +12,8 @@ export const buttonVariants = cva(
         variants: {
             variant: {
                 default:
-                    'bg-ess-blue text-white hover:bg-ess-blue-700 hover:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.24)] dark:text-ess-blue-900',
-                accent: 'bg-ess-green text-white hover:bg-ess-green-700 hover:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.28)] dark:text-ess-blue-900',
+                    'bg-ess-blue text-white hover:bg-ess-blue-700 hover:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.24)]',
+                accent: 'bg-ess-green text-white hover:bg-ess-green-700 hover:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.28)]',
                 outline:
                     'border-ess-line-strong bg-transparent text-ess-blue hover:border-ess-blue hover:bg-ess-mist hover:text-ess-blue',
                 secondary: 'bg-ess-mist text-ess-ink hover:bg-ess-mist-200',
@@ -27,7 +27,8 @@ export const buttonVariants = cva(
             },
             size: {
                 default: '',
-                sm: 'h-9 px-4 text-xs',
+                // Demo .btn--sm (0.55em 1em at 12px): the header « S'inscrire ».
+                sm: 'h-[27px] px-3 text-xs',
                 lg: 'h-12 px-7 text-base',
                 icon: 'size-control px-0',
                 'icon-sm': 'size-9 px-0',

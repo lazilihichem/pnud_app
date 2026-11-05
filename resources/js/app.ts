@@ -3,7 +3,6 @@ import { documentLocale, isLocale, localizedUrl } from '@/i18n';
 import { createInertiaApp, router } from '@inertiajs/vue3';
 import { ConfigProvider } from 'reka-ui';
 import { createApp, createSSRApp, h } from 'vue';
-import { initializeTheme } from '@/composables/useAppearance';
 import { configureApp, layout, resolve, title } from '@/lib/inertiaApp';
 import { initializeFlashToast } from '@/lib/flashToast';
 
@@ -46,9 +45,6 @@ router.on('navigate', (event) => {
         window.location.href = localizedUrl(pageLocale, event.detail.page.url);
     }
 });
-
-// This will set light / dark mode on page load...
-initializeTheme();
 
 // This will listen for flash toast data from the server...
 initializeFlashToast();

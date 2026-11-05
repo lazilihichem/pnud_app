@@ -37,7 +37,11 @@ const switchTab = (value: string | number): void => {
         class="mx-auto max-w-[560px] overflow-hidden rounded-xl border border-ess-line shadow-ess-lg"
     >
         <div class="bg-ess-paper p-6 sm:p-8 lg:p-10">
-            <Tabs :model-value="props.tab" @update:model-value="switchTab">
+            <Tabs
+                :model-value="props.tab"
+                class="gap-0"
+                @update:model-value="switchTab"
+            >
                 <TabsList :aria-label="t('auth.tabs.label')" class="mb-6">
                     <TabsTrigger value="login">{{
                         t('auth.tabs.login')
@@ -51,14 +55,14 @@ const switchTab = (value: string | number): void => {
                 </TabsContent>
             </Tabs>
         </div>
-        <aside class="border-t border-ess-line bg-tag-blue p-6 sm:p-8">
+        <aside class="border-t border-ess-line bg-tag-blue p-6">
             <Eyebrow>{{ t('auth.aside.eyebrow') }}</Eyebrow>
             <h2
-                class="mt-3 text-[1.375rem] leading-snug font-bold text-ess-ink"
+                class="mt-3 text-xl leading-[1.1] font-bold tracking-[-0.01em] text-ess-ink md:text-[1.375rem] rtl:tracking-normal"
             >
                 {{ t('auth.aside.title') }}
             </h2>
-            <p class="mt-2 text-ess-ink-700">{{ t('auth.aside.text') }}</p>
+            <p class="text-ess-ink">{{ t('auth.aside.text') }}</p>
             <ul class="mt-4 grid gap-2">
                 <li
                     v-for="item in asideItems"

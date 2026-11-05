@@ -5,6 +5,9 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+/* Light only: the ESS palette has no dark theme. The variant is pinned to a
+   `.dark` class nothing sets, so the `dark:` utilities in the vendored ui/
+   components never follow the OS colour scheme. */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -209,55 +212,48 @@
     --sidebar: var(--ess-mist);
 }
 
+/* Public portal rhythm (Pnud-demo --lh-body, DESIGN.md « Body »): text reads at a
+   1.65 line height, small sizes included. Scoped to the public shell: the intranet
+   keeps the tighter default scale. Headings set their own leading. */
+.ess-public {
+    line-height: 1.65;
+    --text-xs--line-height: 1.65;
+    --text-sm--line-height: 1.65;
+    --text-base--line-height: 1.65;
+}
+
+/* Phones (demo mobile.css, max-width 768px): body 14px, small 13px, all at 1.4.
+   Fields stay at 16px (`text-[1rem]` in basic/input and native-select) so iOS does
+   not zoom on focus. */
+@media (width < 48rem) {
+    .ess-public {
+        font-size: 0.875rem;
+        line-height: 1.4;
+        --text-xs: 0.75rem;
+        --text-sm: 0.8125rem;
+        --text-base: 0.875rem;
+        --text-xs--line-height: 1.4;
+        --text-sm--line-height: 1.4;
+        --text-base--line-height: 1.4;
+    }
+}
+
 /* Arabic pages: IBM Plex Sans Arabic first; Latin text inside falls back to Poppins. */
 :root:lang(ar) {
     --ess-font-sans:
         'IBM Plex Sans Arabic', Poppins, 'Segoe UI', Tahoma, sans-serif;
 }
 
-/*
-  Dark ESS palette — DERIVED, not validated by the client (the demo is light
-  only). Same hues, lifted for contrast on dark surfaces built from the brand's
-  blue-900. Only the ESS tokens change; the semantic mapping above follows.
-*/
-.dark {
-    --ess-blue: #4f9be0;
-    --ess-blue-700: #6aaee8;
-    --ess-blue-900: #061624;
-    --ess-sky: #3db4e8;
-    --ess-sky-600: #5cc0ec;
-    --ess-green: #7cc95a;
-    --ess-green-700: #8fd46f;
-    --ess-orange-red: #f0673f;
-    --ess-wine: #e0607f;
-    --ess-wine-700: #ea8199;
-    --ess-orange: #f5a862;
-    --ess-yellow: #ffd84d;
-    --ess-ink: #e6edf3;
-    --ess-ink-700: #c9d4de;
-    --ess-slate: #9fb0bf;
-    --ess-slate-300: #6f8395;
-    --ess-on-blue: #cfe3f3;
-    --ess-line: #22313f;
-    --ess-line-strong: #2f4152;
-    --ess-mist: #111f2c;
-    --ess-mist-200: #172736;
-    --ess-paper: #0b1824;
-
-    --tag-blue-bg: #12304d;
-    --tag-green-bg: #18361f;
-    --tag-sky-bg: #0f3346;
-    --tag-orange-bg: #3d2a14;
-    --tag-orange-fg: #f5b06e;
-    --tag-wine-bg: #3d1622;
-    --tag-neutral-bg: #1a2a38;
-
-    --primary: #1f6fb8;
-}
-
 @layer base {
     * {
         @apply border-border outline-ring/50;
+    }
+    /* Demo base.css: balanced headings, no orphan word at the end of a paragraph. */
+    .ess-public :is(h1, h2, h3, h4, h5, h6) {
+        text-wrap: balance;
+    }
+    .ess-public p {
+        text-wrap: pretty;
     }
     body {
         @apply bg-background text-foreground;

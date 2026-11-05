@@ -20,7 +20,7 @@ const model = defineModel<string | number>({ default: '' });
             v-bind="$attrs"
             :class="
                 cn(
-                    'h-control w-full cursor-pointer appearance-none rounded-lg border border-ess-line-strong bg-ess-paper ps-3.5 pe-10 text-base text-ess-ink shadow-ess-xs transition-[color,box-shadow,border-color] outline-none hover:border-ess-slate-300',
+                    'h-control w-full cursor-pointer appearance-none rounded-lg border border-ess-line-strong bg-ess-paper ps-3.5 pe-10 text-[1rem] text-ess-ink shadow-ess-xs transition-[color,box-shadow,border-color] outline-none hover:border-ess-slate-300',
                     'focus-visible:border-ess-sky focus-visible:ring-[3px] focus-visible:ring-ess-sky/20',
                     'aria-invalid:border-ess-wine aria-invalid:bg-tag-wine',
                     'disabled:cursor-not-allowed disabled:bg-ess-mist disabled:text-ess-slate-300',

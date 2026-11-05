@@ -41,7 +41,12 @@ const crumb = computed(() => {
 
 <template>
     <PublicLayout :breadcrumb="crumb">
-        <div class="mx-auto max-w-[1200px] px-4 pt-10 pb-20 sm:px-6 lg:px-10">
+        <div
+            :class="[
+                'mx-auto max-w-[1200px] px-5 sm:px-6 lg:px-10',
+                props.bare ? 'pb-24' : 'pt-10 pb-20',
+            ]"
+        >
             <slot v-if="props.bare" />
             <Card v-else class="mx-auto max-w-[540px] gap-0 p-6 sm:p-8 lg:p-10">
                 <div

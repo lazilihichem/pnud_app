@@ -30,10 +30,8 @@ const { t } = useI18n();
             :title="t('settings.deleteAccount.title')"
             :description="t('settings.deleteAccount.description')"
         />
-        <div
-            class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10"
-        >
-            <div class="relative space-y-0.5 text-red-600 dark:text-red-100">
+        <div class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4">
+            <div class="relative space-y-0.5 text-red-600">
                 <p class="font-medium">
                     {{ t('settings.deleteAccount.warning') }}
                 </p>

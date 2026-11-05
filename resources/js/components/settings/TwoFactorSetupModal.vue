@@ -20,7 +20,6 @@ import {
     InputOTPSlot,
 } from '@/components/basic/input-otp';
 import { Spinner } from '@/components/basic/spinner';
-import { useAppearance } from '@/composables/useAppearance';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import { confirm } from '@/routes/two-factor';
 import type { TwoFactorConfigContent } from '@/types';
@@ -30,7 +29,6 @@ type Props = {
     twoFactorEnabled: boolean;
 };
 
-const { resolvedAppearance } = useAppearance();
 const { t } = useI18n();
 
 const props = defineProps<Props>();
@@ -173,12 +171,6 @@ watch(
                                     <div
                                         v-html="qrCodeSvg"
                                         class="flex aspect-square size-full items-center justify-center"
-                                        :style="{
-                                            filter:
-                                                resolvedAppearance === 'dark'
-                                                    ? 'invert(1) brightness(1.5)'
-                                                    : undefined,
-                                        }"
                                     />
                                 </div>
                             </div>

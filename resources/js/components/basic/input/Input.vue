@@ -13,7 +13,7 @@ const props = defineProps<{
     <UiInput
         :class="
             cn(
-                'h-control rounded-lg border-ess-line-strong bg-ess-paper px-3.5 text-base text-ess-ink shadow-ess-xs placeholder:text-ess-slate hover:border-ess-slate-300 md:text-base',
+                'h-control rounded-lg border-ess-line-strong bg-ess-paper px-3.5 text-[1rem] text-ess-ink shadow-ess-xs placeholder:text-ess-slate hover:border-ess-slate-300 md:text-[1rem]',
                 'focus-visible:border-ess-sky focus-visible:ring-[3px] focus-visible:ring-ess-sky/20',
                 'aria-invalid:border-ess-wine aria-invalid:bg-tag-wine aria-invalid:ring-ess-wine/15',
                 'disabled:border-ess-line disabled:bg-ess-mist disabled:text-ess-slate-300',

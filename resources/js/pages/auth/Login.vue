@@ -57,7 +57,6 @@ const { t } = useI18n();
                     type="email"
                     name="email"
                     required
-                    v-focus
                     autocomplete="email"
                     :placeholder="t('auth.login.emailPlaceholder')"
                     :aria-invalid="errors.email ? true : undefined"
@@ -72,6 +71,8 @@ const { t } = useI18n();
                     name="password"
                     required
                     autocomplete="current-password"
+                    toggle="none"
+                    placeholder="••••••••"
                     :aria-invalid="errors.password ? true : undefined"
                 />
                 <InputError :message="errors.password" />

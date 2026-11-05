@@ -8,7 +8,7 @@ defineProps<{ breadcrumb?: string }>();
 </script>
 
 <template>
-    <div class="flex min-h-svh flex-col bg-ess-paper text-ess-ink">
+    <div class="ess-public flex min-h-svh flex-col bg-ess-paper text-ess-ink">
         <a
             href="#main"
             class="sr-only focus:not-sr-only focus:absolute focus:start-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-ess-paper focus:px-4 focus:py-2"
