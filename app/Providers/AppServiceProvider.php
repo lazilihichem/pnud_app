@@ -12,6 +12,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -29,6 +30,12 @@ class AppServiceProvider extends ServiceProvider
     {
         // Registered before any provider boots, so it also applies to Fortify's routes.
         $this->configureLocaleRoutes();
+
+        // Telescope is a dev dependency (not discovered automatically): local environment only.
+        if ($this->app->environment('local') && class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
+            $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
+            $this->app->register(TelescopeServiceProvider::class);
+        }
     }
 
     /**
@@ -97,8 +104,20 @@ class AppServiceProvider extends ServiceProvider
                 return;
             }
 
+            // A passkey only replaces the password: its session is closed again before the e-mail code
+            // step (PasskeySignInResponse), so it is not a completed sign-in.
+            if (request()->routeIs('passkey.login')) {
+                return;
+            }
+
             $userService = app(UserService::class);
             $userService->recordSignIn($event->user);
+
+            // A remember-me cookie restores the user while SetLocale is still resolving the locale,
+            // so the app locale is only the default here: keep the stored account language.
+            if (Auth::guard($event->guard)->viaRemember()) {
+                return;
+            }
 
             $locale = Locale::tryFrom(App::getLocale());
 

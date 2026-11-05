@@ -7,9 +7,12 @@ use App\Exceptions\Accounts\Auth\SignInCodeExpiredException;
 use App\Exceptions\Accounts\Auth\SignInCodeIncorrectException;
 use App\Exceptions\Accounts\Auth\SignInCodePendingException;
 use App\Exceptions\Accounts\Auth\SignInCodeResendTooEarlyException;
+use App\Exceptions\DomainException;
 use App\Models\Accounts\SignInCode;
 use App\Models\User;
 use App\Notifications\Accounts\SignInCodeNotification;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -34,6 +37,7 @@ class SignInCodeService
 
     /**
      * Send a new code, unless 3 were already sent in the last 15 minutes: the latest one then stays current.
+     * Codes that completed a sign-in do not count, so signing in again always gets a new code.
      */
     public function issue(User $user): SignInCode
     {
@@ -45,9 +49,7 @@ class SignInCodeService
 
         $code = str_pad((string) random_int(0, 999_999), 6, '0', STR_PAD_LEFT);
 
-        // A new code supersedes the previous ones: only the latest can be entered.
-        $user->signInCodes()->whereNull('used_at')->update(['used_at' => now()]);
-
+        // A new code supersedes the previous ones: verify() only accepts the latest.
         $signInCode = $user->signInCodes()->create(['code_hash' => Hash::make($code)]);
 
         $user->notify(new SignInCodeNotification($signInCode, $code));
@@ -84,8 +86,7 @@ class SignInCodeService
         $windowEnd = now();
 
         if ($this->sendsInWindow($user) >= self::MaxSendsPerWindow) {
-            $oldestInWindow = $user->signInCodes()
-                ->where('created_at', '>', now()->subMinutes(self::WindowMinutes))
+            $oldestInWindow = $this->sentInWindow($user)
                 ->oldest('id')
                 ->firstOrFail();
 
@@ -110,36 +111,48 @@ class SignInCodeService
 
     /**
      * Check the code entered by the user; a valid code is used up and verifies the e-mail address.
+     *
+     * The code row is locked while it is checked, so parallel guesses are counted one after the
+     * other and cannot exceed the 3 attempts.
      */
     public function verify(User $user, string $code): void
     {
-        $signInCode = $this->latestFor($user);
+        $failure = DB::transaction(function () use ($user, $code): ?DomainException {
+            $signInCode = $user->signInCodes()->latest('id')->lockForUpdate()->first();
 
-        if ($signInCode === null || $signInCode->used_at !== null) {
-            throw new SignInCodeExpiredException;
+            if ($signInCode === null || $signInCode->used_at !== null) {
+                return new SignInCodeExpiredException;
+            }
+
+            if ($signInCode->isExhausted()) {
+                return new SignInCodeExhaustedException;
+            }
+
+            if ($signInCode->isPendingDelivery()) {
+                return new SignInCodePendingException;
+            }
+
+            if ($signInCode->isExpired()) {
+                return new SignInCodeExpiredException;
+            }
+
+            if (! Hash::check($code, $signInCode->code_hash)) {
+                $signInCode->increment('failed_attempts');
+
+                return $signInCode->isExhausted()
+                    ? new SignInCodeExhaustedException
+                    : new SignInCodeIncorrectException;
+            }
+
+            $signInCode->forceFill(['used_at' => now()])->save();
+
+            return null;
+        });
+
+        // Thrown after the commit, so the counted attempt is kept.
+        if ($failure !== null) {
+            throw $failure;
         }
-
-        if ($signInCode->isExhausted()) {
-            throw new SignInCodeExhaustedException;
-        }
-
-        if ($signInCode->isPendingDelivery()) {
-            throw new SignInCodePendingException;
-        }
-
-        if ($signInCode->isExpired()) {
-            throw new SignInCodeExpiredException;
-        }
-
-        if (! Hash::check($code, $signInCode->code_hash)) {
-            $signInCode->increment('failed_attempts');
-
-            throw $signInCode->isExhausted()
-                ? new SignInCodeExhaustedException
-                : new SignInCodeIncorrectException;
-        }
-
-        $signInCode->forceFill(['used_at' => now()])->save();
 
         if (! $user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
@@ -155,12 +168,23 @@ class SignInCodeService
     }
 
     /**
-     * How many codes were sent within the last 15 minutes.
+     * How many codes count towards the limit of the last 15 minutes.
      */
     private function sendsInWindow(User $user): int
     {
+        return $this->sentInWindow($user)->count();
+    }
+
+    /**
+     * The codes sent within the last 15 minutes that did not complete a sign-in (used_at is
+     * only set by a successful entry).
+     *
+     * @return HasMany<SignInCode, User>
+     */
+    private function sentInWindow(User $user): HasMany
+    {
         return $user->signInCodes()
             ->where('created_at', '>', now()->subMinutes(self::WindowMinutes))
-            ->count();
+            ->whereNull('used_at');
     }
 }

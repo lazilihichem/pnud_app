@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\AccountStatus;
+use App\Enums\UserRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -13,8 +15,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role', 20)->after('password');
-            $table->string('status', 20)->after('role');
+            $table->string('role', 20)->nullable()->after('password');
+            $table->string('status', 20)->nullable()->after('role');
             $table->string('status_before_suspension', 20)->nullable()->after('status');
             $table->text('status_reason')->nullable()->after('status_before_suspension');
             $table->string('organisation', 150)->nullable()->after('status_reason');
@@ -28,9 +30,21 @@ return new class extends Migration
             $table->timestampTz('anonymised_at')->nullable();
 
             $table->index(['role', 'status']);
-            $table->dropUnique(['email']);
         });
 
+        // Accounts created before this migration (dev seeds, earlier environments) become active citizens
+        // and get their e-mail lowercased, as sign-in and registration only look up lowercase addresses.
+        DB::table('users')->whereNull('role')->update(['role' => UserRole::Citoyen->value]);
+        DB::table('users')->whereNull('status')->update(['status' => AccountStatus::Active->value]);
+        DB::table('users')->update(['email' => DB::raw('lower(email)')]);
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('role', 20)->nullable(false)->change();
+            $table->string('status', 20)->nullable(false)->change();
+        });
+
+        // The plain unique index on email (kept) serves the `where email = ?` lookups; this one also
+        // rejects case variants written outside the User model.
         DB::statement('CREATE UNIQUE INDEX users_email_lower_unique ON users (lower(email))');
     }
 
@@ -42,7 +56,6 @@ return new class extends Migration
         DB::statement('DROP INDEX users_email_lower_unique');
 
         Schema::table('users', function (Blueprint $table) {
-            $table->unique('email');
             $table->dropIndex(['role', 'status']);
             $table->dropConstrainedForeignId('wilaya_id');
             $table->dropColumn([

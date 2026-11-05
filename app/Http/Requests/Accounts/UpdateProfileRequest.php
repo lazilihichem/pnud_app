@@ -19,6 +19,16 @@ class UpdateProfileRequest extends FormRequest
     }
 
     /**
+     * Normalise the e-mail so the uniqueness check matches how it is stored (lowercased).
+     */
+    protected function prepareForValidation(): void
+    {
+        if (is_string($this->input('email'))) {
+            $this->merge(['email' => mb_strtolower(trim($this->input('email')))]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>

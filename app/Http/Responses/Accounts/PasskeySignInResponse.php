@@ -27,7 +27,8 @@ class PasskeySignInResponse implements PasskeyLoginResponse
     {
         $user = Auth::user();
 
-        Auth::logout();
+        // Current device only: a full logout would rotate the remember token and sign out the user's other devices.
+        Auth::guard()->logoutCurrentDevice();
 
         if ($user instanceof User) {
             $this->signInService->start($user);

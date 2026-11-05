@@ -3,13 +3,16 @@
 namespace Tests\Feature\Accounts;
 
 use App\Enums\AccountStatus;
+use App\Enums\Locale;
 use App\Enums\UserRole;
 use App\Models\User;
 use App\Notifications\Accounts\SignInCodeNotification;
 use App\Notifications\Accounts\SignInThrottledNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Route;
 use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
 use Laravel\Passkeys\Contracts\PasskeyLoginResponse;
@@ -154,6 +157,38 @@ class SignInTest extends TestCase
         $response->assertSessionHasErrors(['email' => 'Adresse e-mail ou mot de passe incorrect.']);
     }
 
+    public function test_signing_in_to_another_account_keeps_the_slow_down(): void
+    {
+        $victim = User::factory()->create();
+        $attacker = User::factory()->create();
+        $guess = fn () => $this->post(route('login.store'), ['email' => $victim->email, 'password' => 'wrong-password1']);
+        $guess();
+        $guess();
+        $this->post(route('login.store'), ['email' => $attacker->email, 'password' => 'password'])
+            ->assertRedirect(route('login.code'));
+
+        $guess();
+        $response = $guess();
+
+        $response->assertSessionHasErrors(['email' => 'Trop de tentatives. Patientez 30 secondes avant de réessayer.']);
+    }
+
+    public function test_slow_down_holds_when_the_cache_returns_the_wait_as_a_string(): void
+    {
+        $user = User::factory()->create();
+        $fail = fn () => $this->post(route('login.store'), ['email' => $user->email, 'password' => 'wrong-password1']);
+        $fail();
+        $fail();
+        $fail();
+        // Redis returns stored integers as strings.
+        $blockedUntilKey = 'sign-in-blocked-until:'.sha1('127.0.0.1');
+        Cache::put($blockedUntilKey, (string) Cache::get($blockedUntilKey), now()->addSeconds(30));
+
+        $response = $fail();
+
+        $response->assertSessionHasErrors(['email' => 'Trop de tentatives. Patientez 30 secondes avant de réessayer.']);
+    }
+
     public function test_suspended_account_is_refused_before_any_code_is_sent(): void
     {
         $user = User::factory()->status(AccountStatus::Suspended)->create();
@@ -285,6 +320,22 @@ class SignInTest extends TestCase
         $this->post(route('login.code.resend'))->assertSessionHasNoErrors();
     }
 
+    public function test_signing_in_again_after_3_sign_ins_sends_a_new_code(): void
+    {
+        $user = User::factory()->create();
+        foreach (range(1, 3) as $signIn) {
+            $this->signInWithCode($user)->assertRedirect(route('platform.dashboard'));
+            Auth::logout();
+            $this->travel(2)->minutes();
+        }
+
+        $response = $this->signInWithCode($user);
+
+        $response->assertRedirect(route('platform.dashboard'));
+        $this->assertAuthenticatedAs($user);
+        Notification::assertSentToTimes($user, SignInCodeNotification::class, 4);
+    }
+
     public function test_valid_code_verifies_the_e_mail_address(): void
     {
         $user = User::factory()->unverified()->create();
@@ -334,6 +385,20 @@ class SignInTest extends TestCase
         Notification::assertSentTo($user, SignInCodeNotification::class);
     }
 
+    public function test_passkey_alone_does_not_record_a_sign_in(): void
+    {
+        $user = User::factory()->create(['last_login_at' => null]);
+        $request = request();
+        $request->setLaravelSession($this->app['session.store']);
+        $request->setRouteResolver(fn () => Route::getRoutes()->getByName('passkey.login'));
+        Auth::login($user);
+
+        $this->app->make(PasskeyLoginResponse::class)->toResponse($request);
+
+        $this->assertGuest();
+        $this->assertNull($user->refresh()->last_login_at);
+    }
+
     public function test_code_step_without_a_pending_sign_in_returns_to_the_sign_in_page(): void
     {
         $response = $this->get(route('login.code'));
@@ -367,5 +432,16 @@ class SignInTest extends TestCase
 
         $response->assertRedirect('/fr');
         $this->assertGuest();
+    }
+
+    public function test_remember_me_return_keeps_the_account_language(): void
+    {
+        $user = User::factory()->create(['locale' => Locale::Arabic]);
+        $recaller = $user->id.'|'.$user->remember_token.'|'.$user->password;
+
+        $response = $this->withCookie(Auth::guard()->getRecallerName(), $recaller)->get('/');
+
+        $response->assertRedirect('/ar');
+        $this->assertSame(Locale::Arabic, $user->refresh()->locale);
     }
 }
