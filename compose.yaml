@@ -1,3 +1,16 @@
+# Shared by app and horizon: container hostnames for the database and Redis
+# (they override the 127.0.0.1 values in .env, which are for host access).
+x-app-environment: &app-environment
+    DB_CONNECTION: pgsql
+    DB_HOST: db
+    DB_PORT: 5432
+    DB_DATABASE: ${DB_DATABASE:-pud_app}
+    DB_USERNAME: ${DB_USERNAME:-pud_app}
+    DB_PASSWORD: ${DB_PASSWORD:-secret}
+    REDIS_HOST: redis
+    REDIS_PORT: 6379
+    INERTIA_SSR_URL: http://ssr:13714
+
 services:
     app:
         build:
@@ -11,14 +24,7 @@ services:
         ports:
             - '${APP_PORT:-8000}:8000'
             - '${VITE_PORT:-5173}:5173'
-        environment:
-            DB_CONNECTION: pgsql
-            DB_HOST: db
-            DB_PORT: 5432
-            DB_DATABASE: ${DB_DATABASE:-pud_app}
-            DB_USERNAME: ${DB_USERNAME:-pud_app}
-            DB_PASSWORD: ${DB_PASSWORD:-secret}
-            INERTIA_SSR_URL: http://ssr:13714
+        environment: *app-environment
         # PHP's built-in server with Laravel's router (what `artisan serve` uses),
         # run directly so the DB_* values above aren't overridden by .env.
         # The router uses the current directory as the public path, so start in public/.
@@ -31,6 +37,23 @@ services:
         depends_on:
             db:
                 condition: service_healthy
+            redis:
+                condition: service_healthy
+
+    # Queue workers, managed by Horizon (dashboard: /horizon).
+    # Restart it after changing job code: `docker compose restart horizon`.
+    horizon:
+        image: pud-app
+        volumes:
+            - .:/var/www/html
+        environment: *app-environment
+        command: ['php', 'artisan', 'horizon']
+        restart: unless-stopped
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
 
     # Inertia SSR server for the public pages. Needs the SSR bundle: `npm run build:ssr`.
     # (While `npm run dev` runs, Laravel renders through the Vite dev server instead.)
@@ -40,6 +63,18 @@ services:
             - .:/var/www/html
         command: ['php', 'artisan', 'inertia:start-ssr']
         restart: unless-stopped
+
+    redis:
+        image: redis:8.10-alpine
+        volumes:
+            - redisdata:/data
+        ports:
+            - '${FORWARD_REDIS_PORT:-6379}:6379'
+        healthcheck:
+            test: ['CMD', 'redis-cli', 'ping']
+            interval: 5s
+            timeout: 5s
+            retries: 10
 
     db:
         image: postgres:18-alpine
@@ -63,3 +98,4 @@ services:
 
 volumes:
     pgdata:
+    redisdata:

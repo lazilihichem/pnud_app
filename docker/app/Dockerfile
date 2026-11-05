@@ -3,11 +3,11 @@ FROM php:8.4-cli-bookworm
 ARG UID=1000
 ARG GID=1000
 
-# PHP extensions (pdo_pgsql for Postgres + what Laravel / the starter kit need)
+# PHP extensions (pdo_pgsql for Postgres, redis for queues/Horizon, + what Laravel needs)
 COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /usr/local/bin/
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git unzip postgresql-client \
-    && install-php-extensions pdo_pgsql pgsql intl zip bcmath pcntl gd opcache \
+    && install-php-extensions pdo_pgsql pgsql redis intl zip bcmath pcntl gd opcache \
     && rm -rf /var/lib/apt/lists/* \
     && echo "memory_limit=512M" > /usr/local/etc/php/conf.d/memory-limit.ini
 
