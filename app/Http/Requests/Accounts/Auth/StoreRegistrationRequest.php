@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Accounts;
+namespace App\Http\Requests\Accounts\Auth;
 
 use App\Concerns\PasswordValidationRules;
 use App\Enums\UserRole;
@@ -14,7 +14,7 @@ use Illuminate\Validation\Rule;
 /**
  * « Créer un compte » (FR-01). Fields of a profile other than the chosen one are excluded, never stored.
  */
-class RegisterAccountRequest extends FormRequest
+class StoreRegistrationRequest extends FormRequest
 {
     use PasswordValidationRules;
 

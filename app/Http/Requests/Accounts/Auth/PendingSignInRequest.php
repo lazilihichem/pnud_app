@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Requests\Accounts;
+namespace App\Http\Requests\Accounts\Auth;
 
 use App\Models\User;
-use App\Services\Accounts\SignInService;
+use App\Services\Accounts\Auth\SignInService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use LogicException;

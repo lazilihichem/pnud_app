@@ -346,7 +346,7 @@ class SignInTest extends TestCase
         $user = User::factory()->create();
         $this->post(route('login.store'), ['email' => $user->email, 'password' => 'password']);
 
-        $response = $this->post(route('login.code.cancel'));
+        $response = $this->delete(route('login.code.cancel'));
 
         $response->assertRedirect(route('login'));
         $response->assertSessionMissing('sign_in.user_id');

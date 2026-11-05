@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services\Accounts;
+namespace App\Services\Accounts\Auth;
 
 use App\Enums\AccountStatus;
-use App\Exceptions\Accounts\AccountRefusedException;
-use App\Exceptions\Accounts\AccountSuspendedException;
-use App\Exceptions\Accounts\InvalidCredentialsException;
-use App\Exceptions\Accounts\SignInThrottledException;
+use App\Exceptions\Accounts\Auth\AccountRefusedException;
+use App\Exceptions\Accounts\Auth\AccountSuspendedException;
+use App\Exceptions\Accounts\Auth\InvalidCredentialsException;
+use App\Exceptions\Accounts\Auth\SignInThrottledException;
 use App\Models\Accounts\SignInCode;
 use App\Models\User;
 use App\Notifications\Accounts\SignInThrottledNotification;

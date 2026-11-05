@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Accounts;
+namespace App\Http\Controllers\Accounts\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Accounts\ResendSignInCodeRequest;
-use App\Services\Accounts\SignInCodeService;
+use App\Http\Requests\Accounts\Auth\ResendSignInCodeRequest;
+use App\Services\Accounts\Auth\SignInCodeService;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 

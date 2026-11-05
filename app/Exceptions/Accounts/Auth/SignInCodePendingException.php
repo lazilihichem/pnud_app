@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions\Accounts;
+namespace App\Exceptions\Accounts\Auth;
 
 use App\Exceptions\DomainException;
 

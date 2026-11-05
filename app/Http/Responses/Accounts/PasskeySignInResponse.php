@@ -3,7 +3,7 @@
 namespace App\Http\Responses\Accounts;
 
 use App\Models\User;
-use App\Services\Accounts\SignInService;
+use App\Services\Accounts\Auth\SignInService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

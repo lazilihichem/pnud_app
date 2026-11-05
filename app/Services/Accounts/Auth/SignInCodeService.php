@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services\Accounts;
+namespace App\Services\Accounts\Auth;
 
-use App\Exceptions\Accounts\SignInCodeExhaustedException;
-use App\Exceptions\Accounts\SignInCodeExpiredException;
-use App\Exceptions\Accounts\SignInCodeIncorrectException;
-use App\Exceptions\Accounts\SignInCodePendingException;
-use App\Exceptions\Accounts\SignInCodeResendTooEarlyException;
+use App\Exceptions\Accounts\Auth\SignInCodeExhaustedException;
+use App\Exceptions\Accounts\Auth\SignInCodeExpiredException;
+use App\Exceptions\Accounts\Auth\SignInCodeIncorrectException;
+use App\Exceptions\Accounts\Auth\SignInCodePendingException;
+use App\Exceptions\Accounts\Auth\SignInCodeResendTooEarlyException;
 use App\Models\Accounts\SignInCode;
 use App\Models\User;
 use App\Notifications\Accounts\SignInCodeNotification;

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Accounts;
+namespace App\Http\Requests\Accounts\Auth;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ShowRegistrationRequest extends FormRequest
+class CreateRegistrationRequest extends FormRequest
 {
     /**
      * Only signed-out visitors see the registration form.

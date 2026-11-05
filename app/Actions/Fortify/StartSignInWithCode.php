@@ -2,7 +2,7 @@
 
 namespace App\Actions\Fortify;
 
-use App\Services\Accounts\SignInService;
+use App\Services\Accounts\Auth\SignInService;
 use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

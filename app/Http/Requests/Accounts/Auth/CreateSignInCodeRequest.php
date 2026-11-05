@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Accounts;
+namespace App\Http\Requests\Accounts\Auth;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class ShowSignInCodeRequest extends PendingSignInRequest
+class CreateSignInCodeRequest extends PendingSignInRequest
 {
     /**
      * Get the validation rules that apply to the request.

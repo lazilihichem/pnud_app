@@ -1,11 +1,8 @@
 <?php
 
-use App\Http\Controllers\Accounts\CancelSignInController;
-use App\Http\Controllers\Accounts\RegisterAccountController;
-use App\Http\Controllers\Accounts\ResendSignInCodeController;
-use App\Http\Controllers\Accounts\ShowRegistrationController;
-use App\Http\Controllers\Accounts\ShowSignInCodeController;
-use App\Http\Controllers\Accounts\VerifySignInCodeController;
+use App\Http\Controllers\Accounts\Auth\RegistrationResourceController;
+use App\Http\Controllers\Accounts\Auth\ResendSignInCodeController;
+use App\Http\Controllers\Accounts\Auth\SignInCodeResourceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,11 +17,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Accounts — FR-01 registration (moved out of Fortify).
-Route::get('register', ShowRegistrationController::class)->name('register');
-Route::post('register', RegisterAccountController::class)->name('register.store');
+Route::get('register', [RegistrationResourceController::class, 'create'])->name('register');
+Route::post('register', [RegistrationResourceController::class, 'store'])->name('register.store');
 
 // Accounts — FR-02 e-mail code step; the password step is Fortify's POST /{locale}/login.
-Route::get('login/code', ShowSignInCodeController::class)->name('login.code');
-Route::post('login/code', VerifySignInCodeController::class)->middleware('throttle:10,1')->name('login.code.verify');
+Route::get('login/code', [SignInCodeResourceController::class, 'create'])->name('login.code');
+Route::post('login/code', [SignInCodeResourceController::class, 'store'])->middleware('throttle:10,1')->name('login.code.verify');
+Route::delete('login/code', [SignInCodeResourceController::class, 'destroy'])->name('login.code.cancel');
 Route::post('login/code/resend', ResendSignInCodeController::class)->middleware('throttle:10,1')->name('login.code.resend');
-Route::post('login/code/cancel', CancelSignInController::class)->name('login.code.cancel');

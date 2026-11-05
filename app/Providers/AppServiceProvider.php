@@ -6,7 +6,7 @@ use App\Enums\Locale;
 use App\Http\Middleware\HandlePublicRequests;
 use App\Models\User;
 use App\Notifications\Accounts\SignInCodeNotification;
-use App\Services\Accounts\SignInCodeService;
+use App\Services\Accounts\Auth\SignInCodeService;
 use App\Services\Accounts\UserService;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Events\Login;
