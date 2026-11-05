@@ -6,12 +6,14 @@ use App\Enums\Locale;
 use App\Models\Reference\Wilaya;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Inertia\Testing\AssertableInertia as Assert;
+use Tests\Concerns\InteractsWithSignInCodes;
 use Tests\TestCase;
 
 class LocaleTest extends TestCase
 {
-    use RefreshDatabase;
+    use InteractsWithSignInCodes, RefreshDatabase;
 
     public function test_root_redirects_a_new_visitor_to_the_french_portal(): void
     {
@@ -68,10 +70,13 @@ class LocaleTest extends TestCase
     {
         $user = User::factory()->create(['locale' => Locale::French]);
 
+        Notification::fake();
+
         $this->withCookie(Locale::Cookie, 'ar')->post(route('login.store'), [
             'email' => $user->email,
             'password' => 'password',
         ]);
+        $this->withCookie(Locale::Cookie, 'ar')->post(route('login.code.verify'), ['code' => $this->deliverSignInCode($user)]);
 
         $this->assertAuthenticatedAs($user);
         $this->assertSame(Locale::Arabic, $user->fresh()->locale);

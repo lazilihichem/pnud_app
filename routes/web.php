@@ -1,13 +1,17 @@
 <?php
 
 use App\Enums\Locale;
+use App\Http\Controllers\Accounts\CancelSignInController;
 use App\Http\Controllers\Accounts\DeleteAccountController;
 use App\Http\Controllers\Accounts\EditProfileController;
 use App\Http\Controllers\Accounts\EditSecurityController;
 use App\Http\Controllers\Accounts\RegisterAccountController;
+use App\Http\Controllers\Accounts\ResendSignInCodeController;
 use App\Http\Controllers\Accounts\ShowRegistrationController;
+use App\Http\Controllers\Accounts\ShowSignInCodeController;
 use App\Http\Controllers\Accounts\UpdatePasswordController;
 use App\Http\Controllers\Accounts\UpdateProfileController;
+use App\Http\Controllers\Accounts\VerifySignInCodeController;
 use App\Http\Controllers\Operations\RedirectToLocaleController;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +43,12 @@ Route::get('/', RedirectToLocaleController::class)->defaults('area', 'public');
 Route::middleware('guest')->group(function () {
     Route::get('register', ShowRegistrationController::class)->name('register');
     Route::post('register', RegisterAccountController::class)->name('register.store');
+
+    // E-mail code step of the sign-in (FR-02); the password step is Fortify's POST /login.
+    Route::get('login/code', ShowSignInCodeController::class)->name('login.code');
+    Route::post('login/code', VerifySignInCodeController::class)->middleware('throttle:10,1')->name('login.code.verify');
+    Route::post('login/code/resend', ResendSignInCodeController::class)->middleware('throttle:10,1')->name('login.code.resend');
+    Route::post('login/code/cancel', CancelSignInController::class)->name('login.code.cancel');
 });
 
 /*

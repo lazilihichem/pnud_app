@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Actions\Fortify\ResetUserPassword;
+use App\Actions\Fortify\StartSignInWithCode;
+use App\Http\Responses\Accounts\PasskeySignInResponse;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -10,8 +12,10 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
+use Laravel\Fortify\Actions\CanonicalizeUsername;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
+use Laravel\Passkeys\Contracts\PasskeyLoginResponse;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -20,7 +24,8 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // A passkey replaces the password, never the e-mail code (FR-02).
+        $this->app->singleton(PasskeyLoginResponse::class, PasskeySignInResponse::class);
     }
 
     /**
@@ -39,6 +44,12 @@ class FortifyServiceProvider extends ServiceProvider
     private function configureActions(): void
     {
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+
+        // Password step of FR-02: it only opens the e-mail-code step (login.code).
+        Fortify::authenticateThrough(fn (): array => [
+            CanonicalizeUsername::class,
+            StartSignInWithCode::class,
+        ]);
     }
 
     /**

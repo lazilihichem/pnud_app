@@ -41,6 +41,8 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
+            // « Se souvenir de moi »: 30 days, in minutes (FR-02, FR-04).
+            'remember' => 60 * 24 * 30,
         ],
     ],
 

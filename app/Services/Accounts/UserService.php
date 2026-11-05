@@ -80,6 +80,14 @@ class UserService
     }
 
     /**
+     * Store the time of a completed sign-in (« Dernière connexion »).
+     */
+    public function recordSignIn(User $user): void
+    {
+        $user->forceFill(['last_login_at' => now()])->save();
+    }
+
+    /**
      * Store the language the user is using as their account language (SRS FR-06).
      */
     public function updateLocale(User $user, Locale $locale): void

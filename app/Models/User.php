@@ -6,6 +6,7 @@ use App\Enums\AccountStatus;
 use App\Enums\Locale;
 use App\Enums\UserRole;
 use App\Models\Accounts\AccompagnateurProfile;
+use App\Models\Accounts\SignInCode;
 use App\Models\Accounts\TrainerProfile;
 use App\Models\Reference\Wilaya;
 use App\Notifications\Accounts\VerifyEmailNotification;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -116,5 +118,33 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function trainerProfile(): HasOne
     {
         return $this->hasOne(TrainerProfile::class);
+    }
+
+    /**
+     * The sign-in codes sent to the account.
+     *
+     * @return HasMany<SignInCode, $this>
+     */
+    public function signInCodes(): HasMany
+    {
+        return $this->hasMany(SignInCode::class);
+    }
+
+    /**
+     * Whether the account confirmed an authenticator app (optional, on top of the e-mail code).
+     */
+    public function hasConfirmedTwoFactor(): bool
+    {
+        return $this->two_factor_secret !== null && $this->two_factor_confirmed_at !== null;
+    }
+
+    /**
+     * The e-mail address with its local part hidden, as shown on the code step (« a•••@exemple.dz »).
+     */
+    public function maskedEmail(): string
+    {
+        [$local, $domain] = explode('@', $this->email, 2) + [1 => ''];
+
+        return mb_substr($local, 0, 1).'•••@'.$domain;
     }
 }
