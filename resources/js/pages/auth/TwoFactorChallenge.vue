@@ -2,14 +2,14 @@
 import { Form, Head, setLayoutProps } from '@inertiajs/vue3';
 import { computed, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
-import InputError from '@/components/InputError.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import InputError from '@/components/forms/InputError.vue';
+import { Button } from '@/components/basic/button';
+import { Input } from '@/components/basic/input';
 import {
     InputOTP,
     InputOTPGroup,
     InputOTPSlot,
-} from '@/components/ui/input-otp';
+} from '@/components/basic/input-otp';
 import { store } from '@/routes/two-factor/login';
 import type { TwoFactorConfigContent } from '@/types';
 
@@ -38,6 +38,7 @@ watchEffect(() => {
     setLayoutProps({
         title: authConfigContent.value.title,
         description: authConfigContent.value.description,
+        icon: 'shield',
     });
 });
 
@@ -91,7 +92,7 @@ const toggleRecoveryMode = (clearErrors: () => void): void => {
                     <span>{{ t('auth.twoFactorChallenge.orYouCan') }} </span>
                     <button
                         type="button"
-                        class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                        class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
                         @click="() => toggleRecoveryMode(clearErrors)"
                     >
                         {{ t(authConfigContent.buttonText) }}
@@ -125,7 +126,7 @@ const toggleRecoveryMode = (clearErrors: () => void): void => {
                     <span>{{ t('auth.twoFactorChallenge.orYouCan') }} </span>
                     <button
                         type="button"
-                        class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                        class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
                         @click="() => toggleRecoveryMode(clearErrors)"
                     >
                         {{ t(authConfigContent.buttonText) }}

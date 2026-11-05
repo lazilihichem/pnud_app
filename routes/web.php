@@ -17,7 +17,8 @@ Route::get('.well-known/passkey-endpoints', function () {
     ]);
 })->name('well-known.passkeys');
 
-// Authentication pages (/{locale}/login, ...) are registered by Fortify (config/fortify.php).
+// Authentication pages (/{locale}/login, ...) are registered by Fortify (config/fortify.php);
+// the application's own guest pages (registration, e-mail code step) are in routes/auth.php.
 Route::prefix('{locale}')->group(function () {
     // Platform and admin come first so a future public catch-all route
     // such as /{locale}/{slug} cannot capture /{locale}/platform/...
@@ -30,6 +31,9 @@ Route::prefix('{locale}')->group(function () {
         ->name('admin.')
         ->middleware(EnsureAdminAccess::class)
         ->group(base_path('routes/admin.php'));
+
+    Route::middleware('guest')
+        ->group(base_path('routes/auth.php'));
 
     Route::middleware(HandlePublicRequests::class)
         ->group(base_path('routes/public.php'));

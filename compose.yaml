@@ -10,6 +10,8 @@ x-app-environment: &app-environment
     REDIS_HOST: redis
     REDIS_PORT: 6379
     INERTIA_SSR_URL: http://ssr:13714
+    # SSR in dev goes through the Vite container (public/hot points at 0.0.0.0).
+    INERTIA_SSR_HOT_URL: http://vite:5173
 
 services:
     app:
@@ -23,7 +25,6 @@ services:
             - .:/var/www/html
         ports:
             - '${APP_PORT:-8000}:8000'
-            - '${VITE_PORT:-5173}:5173'
         environment: *app-environment
         # PHP's built-in server with Laravel's router (what `artisan serve` uses),
         # run directly so the DB_* values above aren't overridden by .env.
@@ -54,6 +55,24 @@ services:
                 condition: service_healthy
             redis:
                 condition: service_healthy
+
+    # Vite dev server (HMR). Same image and code mount as `app`; writes
+    # public/hot so Laravel serves assets from it. Installs node_modules
+    # on first start if they're missing.
+    vite:
+        image: pud-app
+        volumes:
+            - .:/var/www/html
+        ports:
+            - '${VITE_PORT:-5173}:5173'
+        command:
+            [
+                'sh',
+                '-c',
+                '[ -d node_modules ] || npm install --no-audit --no-fund; exec npm run dev -- --host 0.0.0.0',
+            ]
+        depends_on:
+            - app
 
     # Inertia SSR server for the public pages. Needs the SSR bundle: `npm run build:ssr`.
     # (While `npm run dev` runs, Laravel renders through the Vite dev server instead.)

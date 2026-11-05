@@ -115,9 +115,11 @@ return [
     */
 
     'limiters' => [
-        'login' => 'login',
+        // Sign-in throttling is the FR-02 slow-down (SignInService), not a per-minute limiter.
+        'login' => null,
         'two-factor' => 'two-factor',
         'passkeys' => 'passkeys',
+        'verification' => 'verification',
     ],
 
     /*
@@ -161,7 +163,6 @@ return [
     */
 
     'features' => [
-        Features::registration(),
         Features::resetPasswords(),
         Features::emailVerification(),
         Features::twoFactorAuthentication([

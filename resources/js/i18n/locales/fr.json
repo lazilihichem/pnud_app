@@ -15,6 +15,8 @@
         "confirmPassword": "Confirmer le mot de passe",
         "showPassword": "Afficher le mot de passe",
         "hidePassword": "Masquer le mot de passe",
+        "show": "Afficher",
+        "hide": "Masquer",
         "logIn": "Se connecter",
         "logOut": "Se déconnecter",
         "register": "S'inscrire",
@@ -38,18 +40,31 @@
         "login": {
             "pageTitle": "Connexion",
             "title": "Connectez-vous à votre compte",
-            "description": "Saisissez votre adresse e-mail et votre mot de passe pour vous connecter",
             "forgotPassword": "Mot de passe oublié ?",
             "rememberMe": "Se souvenir de moi",
-            "noAccount": "Vous n'avez pas de compte ?",
-            "signUp": "S'inscrire"
+            "emailPlaceholder": "vous{'@'}exemple.dz",
+            "submit": "Se connecter"
         },
         "register": {
             "pageTitle": "Inscription",
             "title": "Créer un compte",
-            "description": "Saisissez vos informations ci-dessous pour créer votre compte",
-            "submit": "Créer le compte",
-            "haveAccount": "Vous avez déjà un compte ?"
+            "submit": "Créer mon compte",
+            "role": "Je suis",
+            "chooseRole": "Choisir votre profil…",
+            "organisation": "Organisation",
+            "wilaya": "Wilaya",
+            "chooseWilaya": "Choisir…",
+            "fonction": "Fonction / spécialité",
+            "linkedin": "Profil LinkedIn",
+            "education": "Formation / diplômes",
+            "cv": "CV",
+            "terms": "J'accepte les {terms} et la {privacy}.",
+            "roleHintFirst": "à renseigner en premier",
+            "roleHint": "Le profil ne pourra plus être modifié ensuite. Les accompagnateurs et formateurs accèdent à tout leur espace après une étape de validation.",
+            "cvHint": "PDF, DOC ou DOCX, 5 Mo maximum.",
+            "passwordHint": "8 à 64 caractères, avec au moins une lettre et un chiffre.",
+            "termsLink": "conditions d'utilisation",
+            "privacyLink": "politique de confidentialité"
         },
         "forgotPassword": {
             "title": "Mot de passe oublié",
@@ -86,6 +101,31 @@
             "useAuthenticationCode": "vous connecter avec un code d'authentification",
             "recoveryPlaceholder": "Saisissez le code de récupération",
             "orYouCan": "ou vous pouvez"
+        },
+        "signInCode": {
+            "pageTitle": "Code de vérification",
+            "title": "Vérifiez votre adresse e-mail",
+            "description": "Saisissez le code à 6 chiffres envoyé par e-mail. Il est valable 5 minutes et ne sert qu'une fois.",
+            "sentTo": "Code envoyé à {email}.",
+            "deliveryPending": "L'envoi du code prend plus de temps que prévu.",
+            "submit": "Valider",
+            "resend": "Renvoyer le code",
+            "resendIn": "Renvoyer le code dans {time}",
+            "otherAccount": "Utiliser un autre compte"
+        },
+        "aside": {
+            "eyebrow": "Espace membre",
+            "title": "Rejoignez l'écosystème de l'ESS",
+            "text": "Créez un compte pour référencer un projet, accéder aux parcours d'accompagnement et suivre vos formations.",
+            "item1": "Proposer et gérer un projet ESS",
+            "item2": "Accéder aux espaces d'accompagnement",
+            "item3": "S'inscrire aux formations de l'Académie",
+            "item4": "Participer aux consultations citoyennes"
+        },
+        "tabs": {
+            "label": "Connexion ou création de compte",
+            "login": "Connexion",
+            "register": "Créer un compte"
         }
     },
     "passkeys": {
@@ -114,8 +154,7 @@
         "description": "Gérez votre profil et les paramètres de votre compte",
         "nav": {
             "profile": "Profil",
-            "security": "Sécurité",
-            "appearance": "Apparence"
+            "security": "Sécurité"
         },
         "profile": {
             "pageTitle": "Paramètres du profil",
@@ -131,13 +170,6 @@
             "updatePasswordDescription": "Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester sécurisé",
             "currentPassword": "Mot de passe actuel",
             "newPassword": "Nouveau mot de passe"
-        },
-        "appearance": {
-            "pageTitle": "Paramètres d'apparence",
-            "description": "Modifiez les paramètres d'apparence de votre compte",
-            "light": "Clair",
-            "dark": "Sombre",
-            "system": "Système"
         },
         "deleteAccount": {
             "title": "Supprimer le compte",
@@ -177,5 +209,87 @@
     },
     "welcome": {
         "pageTitle": "Bienvenue"
+    },
+    "public": {
+        "nav": {
+            "main": "Navigation principale",
+            "mobile": "Navigation mobile",
+            "decouvrir": "Découvrir l'ESS",
+            "projets": "Projets",
+            "accompagnement": "Accompagnement",
+            "academie": "Académie",
+            "participation": "Participation",
+            "ressources": "Ressources",
+            "medias": "Médias",
+            "contact": "Contact"
+        },
+        "header": {
+            "home": "Accueil, Économie Sociale et Solidaire",
+            "logoAlt": "Logo ESS, Économie Sociale et Solidaire",
+            "search": "Rechercher",
+            "openMenu": "Ouvrir le menu",
+            "menu": "Menu",
+            "signIn": "Se connecter",
+            "signUp": "S'inscrire",
+            "createAccount": "Créer un compte",
+            "mySpace": "Mon espace ESS",
+            "myProfile": "Mon profil",
+            "logOut": "Déconnexion",
+            "account": "Mon compte"
+        },
+        "footer": {
+            "portal": "Le portail",
+            "projects": "Projets ESS",
+            "academy": "Académie ESS",
+            "participation": "Participation citoyenne",
+            "resources": "Ressources",
+            "resourceCentre": "Centre de ressources",
+            "media": "Médias & actualités",
+            "agenda": "Agenda",
+            "about": "À propos",
+            "programme": "Le programme",
+            "partners": "Partenaires",
+            "faq": "FAQ",
+            "sitemap": "Plan du site",
+            "legal": "Mentions légales",
+            "privacy": "Confidentialité",
+            "accessibility": "Accessibilité",
+            "sitemapLabel": "Plan du site",
+            "address": "Programme ESS, PNUD Algérie, Alger",
+            "copyright": "© {year} Plateforme ESS, Programme financé par l'Union Européenne.",
+            "fundedBy": "Programme financé par l'Union Européenne",
+            "euAlt": "Union Européenne",
+            "mtessAlt": "République algérienne démocratique et populaire, Ministère du Travail, de l'Emploi et de la Sécurité sociale",
+            "undpAlt": "PNUD, Programme des Nations Unies pour le Développement",
+            "backToTop": "Haut de page"
+        },
+        "breadcrumb": {
+            "label": "Fil d'Ariane",
+            "home": "Accueil"
+        },
+        "skipLink": "Aller au contenu"
+    },
+    "home": {
+        "comingSoon": "Cette page sera complétée avec le module correspondant.",
+        "entrepreneur": {
+            "title": "Espace entrepreneur",
+            "description": "Vos projets ESS, leur dossier et leur accompagnement."
+        },
+        "accompagnateur": {
+            "title": "Espace accompagnateur",
+            "description": "Votre agrément, les projets orientés et vos accompagnements."
+        },
+        "formateur": {
+            "title": "Ma qualification",
+            "description": "Le parcours de qualification des formateurs de l'Académie."
+        },
+        "citoyen": {
+            "title": "Espace citoyen",
+            "description": "Vos contributions aux projets et vos formations."
+        },
+        "admin": {
+            "title": "Administration",
+            "description": "Le back-office de la plateforme."
+        }
     }
 }

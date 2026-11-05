@@ -5,18 +5,72 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+/* Light only: the ESS palette has no dark theme. The variant is pinned to a
+   `.dark` class nothing sets, so the `dark:` utilities in the vendored ui/
+   components never follow the OS colour scheme. */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-sans:
-        Instrument Sans, ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+    /* ESS typography (Pnud-demo css/tokens.css): Poppins, and IBM Plex Sans Arabic on
+       Arabic pages. Through a variable, so `font-sans` follows the page language. */
+    --font-sans: var(--ess-font-sans);
 
+    /* Radii: sharp / editorial. 6px controls, 10px cards, 5px buttons. */
+    --radius-sm: 2px;
+    --radius-md: 4px;
     --radius-lg: var(--radius);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-sm: calc(var(--radius) - 4px);
+    --radius-xl: 10px;
+    --radius-button: 5px;
 
+    /* Control heights: 44px fields and buttons (touch target), 36px chips. */
+    --spacing-control: 2.75rem;
+    --spacing-chip: 2.25rem;
+
+    /* ESS brand palette — use these for anything the demo colours by name. */
+    --color-ess-blue: var(--ess-blue);
+    --color-ess-blue-700: var(--ess-blue-700);
+    --color-ess-blue-900: var(--ess-blue-900);
+    --color-ess-sky: var(--ess-sky);
+    --color-ess-sky-600: var(--ess-sky-600);
+    --color-ess-green: var(--ess-green);
+    --color-ess-green-700: var(--ess-green-700);
+    --color-ess-orange-red: var(--ess-orange-red);
+    --color-ess-wine: var(--ess-wine);
+    --color-ess-wine-700: var(--ess-wine-700);
+    --color-ess-orange: var(--ess-orange);
+    --color-ess-yellow: var(--ess-yellow);
+    --color-ess-ink: var(--ess-ink);
+    --color-ess-ink-700: var(--ess-ink-700);
+    --color-ess-slate: var(--ess-slate);
+    --color-ess-slate-300: var(--ess-slate-300);
+    --color-ess-on-blue: var(--ess-on-blue);
+    --color-ess-line: var(--ess-line);
+    --color-ess-line-strong: var(--ess-line-strong);
+    --color-ess-mist: var(--ess-mist);
+    --color-ess-mist-200: var(--ess-mist-200);
+    --color-ess-paper: var(--ess-paper);
+
+    /* Soft tag / note backgrounds and their readable text colour. */
+    --color-tag-blue: var(--tag-blue-bg);
+    --color-tag-blue-fg: var(--tag-blue-fg);
+    --color-tag-green: var(--tag-green-bg);
+    --color-tag-green-fg: var(--tag-green-fg);
+    --color-tag-sky: var(--tag-sky-bg);
+    --color-tag-sky-fg: var(--tag-sky-fg);
+    --color-tag-orange: var(--tag-orange-bg);
+    --color-tag-orange-fg: var(--tag-orange-fg);
+    --color-tag-wine: var(--tag-wine-bg);
+    --color-tag-wine-fg: var(--tag-wine-fg);
+    --color-tag-neutral: var(--tag-neutral-bg);
+    --color-tag-neutral-fg: var(--tag-neutral-fg);
+
+    /* Shadows: only for what actually floats (DESIGN.md Floating-Only Rule). */
+    --shadow-ess-xs: 0 1px 2px rgb(18 33 46 / 0.06);
+    --shadow-ess-sm: 0 2px 8px rgb(18 33 46 / 0.07);
+    --shadow-ess-md: 0 10px 24px rgb(18 33 46 / 0.09);
+    --shadow-ess-lg: 0 20px 48px rgb(18 33 46 / 0.13);
+
+    /* shadcn-vue semantic colours, mapped onto the ESS palette below. */
     --color-background: var(--background);
     --color-foreground: var(--foreground);
 
@@ -79,92 +133,127 @@
     }
 }
 
-@layer utilities {
-    body,
-    html {
-        --font-sans:
-            'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-            'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-            'Noto Color Emoji';
+:root {
+    /* ---- ESS typography ---- */
+    --ess-font-sans:
+        Poppins, 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+
+    /* ---- ESS tokens (Pnud-demo css/tokens.css, validated design) ---- */
+    --ess-blue: #0058a5;
+    --ess-blue-700: #004a8c;
+    --ess-blue-900: #00335f;
+    --ess-sky: #169fdb;
+    --ess-sky-600: #0f88bd;
+    --ess-green: #61b234;
+    --ess-green-700: #4d9327;
+    --ess-orange-red: #e74011;
+    --ess-wine: #a3173e;
+    --ess-wine-700: #85102f;
+    --ess-orange: #f3953f;
+    --ess-yellow: #ffcd1c;
+    --ess-ink: #12212e;
+    --ess-ink-700: #33414d;
+    --ess-slate: #5b6b7a;
+    --ess-slate-300: #93a2af;
+    --ess-on-blue: #cfe3f3;
+    --ess-line: #e3e9f0;
+    --ess-line-strong: #cbd6e1;
+    --ess-mist: #f4f7fa;
+    --ess-mist-200: #eaf0f6;
+    --ess-paper: #ffffff;
+
+    --tag-blue-bg: #e4eff8;
+    --tag-blue-fg: var(--ess-blue);
+    --tag-green-bg: #e8f4de;
+    --tag-green-fg: var(--ess-green-700);
+    --tag-sky-bg: #e1f3fb;
+    --tag-sky-fg: var(--ess-sky-600);
+    --tag-orange-bg: #fdeedd;
+    --tag-orange-fg: #c56a1c;
+    --tag-wine-bg: #f7e1e8;
+    --tag-wine-fg: var(--ess-wine);
+    --tag-neutral-bg: #edf1f5;
+    --tag-neutral-fg: var(--ess-slate);
+
+    /* ---- shadcn-vue semantic colours → ESS ---- */
+    --background: var(--ess-paper);
+    --foreground: var(--ess-ink);
+    --card: var(--ess-paper);
+    --card-foreground: var(--ess-ink);
+    --popover: var(--ess-paper);
+    --popover-foreground: var(--ess-ink);
+    --primary: var(--ess-blue);
+    --primary-foreground: #ffffff;
+    --secondary: var(--ess-mist);
+    --secondary-foreground: var(--ess-ink);
+    --muted: var(--ess-mist);
+    --muted-foreground: var(--ess-slate);
+    --accent: var(--ess-mist);
+    --accent-foreground: var(--ess-blue);
+    --destructive: var(--ess-wine);
+    --destructive-foreground: #ffffff;
+    --border: var(--ess-line);
+    --input: var(--ess-line-strong);
+    --ring: var(--ess-sky);
+    --chart-1: var(--ess-blue);
+    --chart-2: var(--ess-green);
+    --chart-3: var(--ess-sky);
+    --chart-4: var(--ess-orange);
+    --chart-5: var(--ess-wine);
+    --radius: 6px;
+    --sidebar-background: var(--ess-mist);
+    --sidebar-foreground: var(--ess-ink);
+    --sidebar-primary: var(--ess-blue);
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: var(--ess-mist-200);
+    --sidebar-accent-foreground: var(--ess-blue);
+    --sidebar-border: var(--ess-line);
+    --sidebar-ring: var(--ess-sky);
+    --sidebar: var(--ess-mist);
+}
+
+/* Public portal rhythm (Pnud-demo --lh-body, DESIGN.md « Body »): text reads at a
+   1.65 line height, small sizes included. Scoped to the public shell: the intranet
+   keeps the tighter default scale. Headings set their own leading. */
+.ess-public {
+    line-height: 1.65;
+    --text-xs--line-height: 1.65;
+    --text-sm--line-height: 1.65;
+    --text-base--line-height: 1.65;
+}
+
+/* Phones (demo mobile.css, max-width 768px): body 14px, small 13px, all at 1.4.
+   Fields stay at 16px (`text-[1rem]` in basic/input and native-select) so iOS does
+   not zoom on focus. */
+@media (width < 48rem) {
+    .ess-public {
+        font-size: 0.875rem;
+        line-height: 1.4;
+        --text-xs: 0.75rem;
+        --text-sm: 0.8125rem;
+        --text-base: 0.875rem;
+        --text-xs--line-height: 1.4;
+        --text-sm--line-height: 1.4;
+        --text-base--line-height: 1.4;
     }
 }
 
-:root {
-    --background: hsl(0 0% 100%);
-    --foreground: hsl(0 0% 3.9%);
-    --card: hsl(0 0% 100%);
-    --card-foreground: hsl(0 0% 3.9%);
-    --popover: hsl(0 0% 100%);
-    --popover-foreground: hsl(0 0% 3.9%);
-    --primary: hsl(0 0% 9%);
-    --primary-foreground: hsl(0 0% 98%);
-    --secondary: hsl(0 0% 92.1%);
-    --secondary-foreground: hsl(0 0% 9%);
-    --muted: hsl(0 0% 96.1%);
-    --muted-foreground: hsl(0 0% 45.1%);
-    --accent: hsl(0 0% 96.1%);
-    --accent-foreground: hsl(0 0% 9%);
-    --destructive: hsl(0 84.2% 60.2%);
-    --destructive-foreground: hsl(0 0% 98%);
-    --border: hsl(0 0% 92.8%);
-    --input: hsl(0 0% 89.8%);
-    --ring: hsl(0 0% 3.9%);
-    --chart-1: hsl(12 76% 61%);
-    --chart-2: hsl(173 58% 39%);
-    --chart-3: hsl(197 37% 24%);
-    --chart-4: hsl(43 74% 66%);
-    --chart-5: hsl(27 87% 67%);
-    --radius: 0.5rem;
-    --sidebar-background: hsl(0 0% 98%);
-    --sidebar-foreground: hsl(240 5.3% 26.1%);
-    --sidebar-primary: hsl(0 0% 10%);
-    --sidebar-primary-foreground: hsl(0 0% 98%);
-    --sidebar-accent: hsl(0 0% 94%);
-    --sidebar-accent-foreground: hsl(0 0% 30%);
-    --sidebar-border: hsl(0 0% 91%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
-    --sidebar: hsl(0 0% 98%);
-}
-
-.dark {
-    --background: hsl(0 0% 3.9%);
-    --foreground: hsl(0 0% 98%);
-    --card: hsl(0 0% 3.9%);
-    --card-foreground: hsl(0 0% 98%);
-    --popover: hsl(0 0% 3.9%);
-    --popover-foreground: hsl(0 0% 98%);
-    --primary: hsl(0 0% 98%);
-    --primary-foreground: hsl(0 0% 9%);
-    --secondary: hsl(0 0% 14.9%);
-    --secondary-foreground: hsl(0 0% 98%);
-    --muted: hsl(0 0% 16.08%);
-    --muted-foreground: hsl(0 0% 63.9%);
-    --accent: hsl(0 0% 14.9%);
-    --accent-foreground: hsl(0 0% 98%);
-    --destructive: hsl(0 84% 60%);
-    --destructive-foreground: hsl(0 0% 98%);
-    --border: hsl(0 0% 14.9%);
-    --input: hsl(0 0% 14.9%);
-    --ring: hsl(0 0% 83.1%);
-    --chart-1: hsl(220 70% 50%);
-    --chart-2: hsl(160 60% 45%);
-    --chart-3: hsl(30 80% 55%);
-    --chart-4: hsl(280 65% 60%);
-    --chart-5: hsl(340 75% 55%);
-    --sidebar-background: hsl(0 0% 7%);
-    --sidebar-foreground: hsl(0 0% 95.9%);
-    --sidebar-primary: hsl(360, 100%, 100%);
-    --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(0 0% 15.9%);
-    --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-    --sidebar-border: hsl(0 0% 15.9%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
-    --sidebar: hsl(240 5.9% 10%);
+/* Arabic pages: IBM Plex Sans Arabic first; Latin text inside falls back to Poppins. */
+:root:lang(ar) {
+    --ess-font-sans:
+        'IBM Plex Sans Arabic', Poppins, 'Segoe UI', Tahoma, sans-serif;
 }
 
 @layer base {
     * {
         @apply border-border outline-ring/50;
+    }
+    /* Demo base.css: balanced headings, no orphan word at the end of a paragraph. */
+    .ess-public :is(h1, h2, h3, h4, h5, h6) {
+        text-wrap: balance;
+    }
+    .ess-public p {
+        text-wrap: pretty;
     }
     body {
         @apply bg-background text-foreground;

@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Middleware\HandleAppearance;
+use App\Exceptions\DomainException;
+use App\Http\Middleware\EnsureProfileType;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
@@ -17,11 +18,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
+        // Profile gate of member-space pages: ->middleware('profile:formateur') (FR-04).
+        $middleware->alias(['profile' => EnsureProfileType::class]);
+
+        $middleware->encryptCookies(except: ['sidebar_state']);
+
+        // A signed-in user opening a guest page (sign-in, registration) lands on their role's home.
+        $middleware->redirectUsersTo(fn (): string => route('platform.home'));
 
         $middleware->web(append: [
             SetLocale::class,
-            HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
@@ -33,6 +39,8 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->dontReport(DomainException::class);
+
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );

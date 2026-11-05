@@ -1,0 +1,47 @@
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+import {
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+} from '@/components/basic/sidebar';
+import { toUrl } from '@/lib/utils';
+import type { NavItem } from '@/types';
+
+type Props = {
+    items: NavItem[];
+    class?: string;
+};
+
+defineProps<Props>();
+
+const { t } = useI18n();
+</script>
+
+<template>
+    <SidebarGroup
+        :class="`group-data-[collapsible=icon]:p-0 ${$props.class || ''}`"
+    >
+        <SidebarGroupContent>
+            <SidebarMenu>
+                <SidebarMenuItem v-for="item in items" :key="item.title">
+                    <SidebarMenuButton
+                        class="text-neutral-600 hover:text-neutral-800"
+                        as-child
+                    >
+                        <a
+                            :href="toUrl(item.href)"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <component :is="item.icon" />
+                            <span>{{ t(item.title) }}</span>
+                        </a>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
+        </SidebarGroupContent>
+    </SidebarGroup>
+</template>

@@ -1,23 +1,26 @@
 <script setup lang="ts">
+// « Connexion » tab of the demo's connexion page (FR-02): the password step.
 import { Form, Head } from '@inertiajs/vue3';
+import { User } from '@lucide/vue';
 import { useI18n } from 'vue-i18n';
-import InputError from '@/components/InputError.vue';
-import PasswordInput from '@/components/PasswordInput.vue';
-import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import { register } from '@/routes';
+import AuthCard from '@/components/auth/AuthCard.vue';
+import PasskeyVerify from '@/components/auth/PasskeyVerify.vue';
+import { Alert, AlertDescription } from '@/components/basic/alert';
+import { Button } from '@/components/basic/button';
+import { Checkbox } from '@/components/basic/checkbox';
+import { Input } from '@/components/basic/input';
+import { Label } from '@/components/basic/label';
+import { Spinner } from '@/components/basic/spinner';
+import InputError from '@/components/forms/InputError.vue';
+import PasswordInput from '@/components/forms/PasswordInput.vue';
+import TextLink from '@/components/typography/TextLink.vue';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
-import PasskeyVerify from '@/components/PasskeyVerify.vue';
 
 defineOptions({
     layout: {
-        title: 'auth.login.title',
-        description: 'auth.login.description',
+        breadcrumb: 'auth.login.pageTitle',
+        bare: true,
     },
 });
 
@@ -32,84 +35,77 @@ const { t } = useI18n();
 <template>
     <Head :title="t('auth.login.pageTitle')" />
 
-    <div
-        v-if="status"
-        class="mb-4 text-center text-sm font-medium text-green-600"
-    >
-        {{ status }}
-    </div>
+    <AuthCard tab="login">
+        <h1 class="sr-only">{{ t('auth.login.title') }}</h1>
 
-    <PasskeyVerify />
+        <Alert v-if="status" tone="success" class="mb-5">
+            <AlertDescription>{{ status }}</AlertDescription>
+        </Alert>
 
-    <Form
-        v-bind="store.form()"
-        :reset-on-success="['password']"
-        v-slot="{ errors, processing }"
-        class="flex flex-col gap-6"
-    >
-        <div class="grid gap-6">
+        <PasskeyVerify />
+
+        <Form
+            v-bind="store.form()"
+            :reset-on-success="['password']"
+            v-slot="{ errors, processing }"
+            class="grid gap-4"
+        >
             <div class="grid gap-2">
-                <Label for="email">{{ t('common.emailAddress') }}</Label>
+                <Label for="email">{{ t('common.email') }} *</Label>
                 <Input
                     id="email"
                     type="email"
                     name="email"
                     required
-                    v-focus
-                    :tabindex="1"
                     autocomplete="email"
-                    placeholder="email@example.com"
+                    :placeholder="t('auth.login.emailPlaceholder')"
+                    :aria-invalid="errors.email ? true : undefined"
                 />
                 <InputError :message="errors.email" />
             </div>
 
             <div class="grid gap-2">
-                <div class="flex items-center justify-between">
-                    <Label for="password">{{ t('common.password') }}</Label>
-                    <TextLink
-                        v-if="canResetPassword"
-                        :href="request()"
-                        class="text-sm"
-                        :tabindex="5"
-                    >
-                        {{ t('auth.login.forgotPassword') }}
-                    </TextLink>
-                </div>
+                <Label for="password">{{ t('common.password') }} *</Label>
                 <PasswordInput
                     id="password"
                     name="password"
                     required
-                    :tabindex="2"
                     autocomplete="current-password"
-                    :placeholder="t('common.password')"
+                    toggle="none"
+                    placeholder="••••••••"
+                    :aria-invalid="errors.password ? true : undefined"
                 />
                 <InputError :message="errors.password" />
             </div>
 
-            <div class="flex items-center justify-between">
-                <Label for="remember" class="flex items-center gap-3">
-                    <Checkbox id="remember" name="remember" :tabindex="3" />
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <label
+                    for="remember"
+                    class="flex items-center gap-3 text-sm text-ess-slate"
+                >
+                    <Checkbox id="remember" name="remember" />
                     <span>{{ t('auth.login.rememberMe') }}</span>
-                </Label>
+                </label>
+                <TextLink
+                    v-if="canResetPassword"
+                    :href="request()"
+                    class="text-sm"
+                >
+                    {{ t('auth.login.forgotPassword') }}
+                </TextLink>
             </div>
 
             <Button
                 type="submit"
-                class="mt-4 w-full"
-                :tabindex="4"
+                block
+                diamond
                 :disabled="processing"
                 data-test="login-button"
             >
                 <Spinner v-if="processing" />
-                {{ t('common.logIn') }}
+                <User v-else class="size-4" aria-hidden="true" />
+                {{ t('auth.login.submit') }}
             </Button>
-        </div>
-
-        <div class="text-center text-sm text-muted-foreground">
-            {{ t('auth.login.noAccount') }}
-            <TextLink :href="register()" :tabindex="5">{{
-                t('auth.login.signUp')
-            }}</TextLink>
-        </div>
-    </Form>
+        </Form>
+    </AuthCard>
 </template>

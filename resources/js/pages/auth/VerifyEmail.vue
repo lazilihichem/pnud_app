@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
-import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
+import TextLink from '@/components/typography/TextLink.vue';
+import { Button } from '@/components/basic/button';
+import { Spinner } from '@/components/basic/spinner';
 import { logout } from '@/routes';
 import { send } from '@/routes/verification';
 
@@ -11,6 +11,7 @@ defineOptions({
     layout: {
         title: 'auth.verifyEmail.title',
         description: 'auth.verifyEmail.description',
+        icon: 'mail',
     },
 });
 

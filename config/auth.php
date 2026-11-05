@@ -41,6 +41,8 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
+            // « Se souvenir de moi »: 30 days, in minutes (FR-02, FR-04).
+            'remember' => 60 * 24 * 30,
         ],
     ],
 
@@ -99,6 +101,19 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | E-mail Verification Link Lifetime
+    |--------------------------------------------------------------------------
+    |
+    | Minutes the e-mail verification link stays valid (FR-01: 24 hours).
+    |
+    */
+
+    'verification' => [
+        'expire' => 1440,
     ],
 
     /*

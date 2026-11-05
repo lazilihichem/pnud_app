@@ -1,119 +1,318 @@
 <script setup lang="ts">
+// « Créer un compte » tab of the demo's connexion page (FR-01).
 import { Form, Head } from '@inertiajs/vue3';
+import { Check } from '@lucide/vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import InputError from '@/components/InputError.vue';
-import PasswordInput from '@/components/PasswordInput.vue';
-import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
+import AuthCard from '@/components/auth/AuthCard.vue';
+import { Button } from '@/components/basic/button';
+import { Input } from '@/components/basic/input';
+import { Label } from '@/components/basic/label';
+import { NativeSelect } from '@/components/basic/native-select';
+import { Spinner } from '@/components/basic/spinner';
+import InputError from '@/components/forms/InputError.vue';
+import PasswordInput from '@/components/forms/PasswordInput.vue';
+import TextLink from '@/components/typography/TextLink.vue';
+import {
+    privacyLink,
+    publicUrl,
+    termsLink,
+} from '@/components/public/navigation';
+import { useLocale } from '@/composables/useLocale';
 import { login } from '@/routes';
+import { request } from '@/routes/password';
 import { store } from '@/routes/register';
 
+type Option<T> = { value: T; label: string };
+
 defineProps<{
+    roles: Option<string>[];
+    wilayas: Option<number>[];
     passwordRules: string;
 }>();
 
 defineOptions({
     layout: {
-        title: 'auth.register.title',
-        description: 'auth.register.description',
+        breadcrumb: 'auth.register.pageTitle',
+        bare: true,
     },
 });
 
 const { t } = useI18n();
+const { locale } = useLocale();
+
+// Switching profile unmounts the fields of the previous one, so they are never submitted.
+const role = ref('');
+
+// The tile beside the profile select (demo .select-3d): one pictogram per profile.
+const roleEmoji: Record<string, string> = {
+    entrepreneur: '🌱',
+    accompagnateur: '🤝',
+    formateur: '🎓',
+    citoyen: '🫶',
+};
+
+// Bound from script: a literal "https://" in a template attribute breaks vue-tsc's slot scope.
+const linkedinPlaceholder = 'https://www.linkedin.com/in/…';
 </script>
 
 <template>
     <Head :title="t('auth.register.pageTitle')" />
 
-    <Form
-        v-bind="store.form()"
-        :reset-on-success="['password', 'password_confirmation']"
-        v-slot="{ errors, processing }"
-        class="flex flex-col gap-6"
-    >
-        <div class="grid gap-6">
+    <AuthCard tab="register">
+        <h1 class="sr-only">{{ t('auth.register.title') }}</h1>
+
+        <Form
+            v-bind="store.form()"
+            :reset-on-success="['password', 'password_confirmation']"
+            v-slot="{ errors, processing }"
+            class="grid gap-4"
+        >
             <div class="grid gap-2">
-                <Label for="name">{{ t('common.name') }}</Label>
+                <Label for="role"
+                    >{{ t('auth.register.role') }} *
+                    <span class="text-xs font-normal text-ess-slate"
+                        >— {{ t('auth.register.roleHintFirst') }}</span
+                    ></Label
+                >
+                <div class="flex items-center gap-3">
+                    <span
+                        :key="role"
+                        class="grid size-[60px] flex-none animate-in place-items-center rounded-md border-[1.5px] border-ess-line-strong bg-[radial-gradient(circle_at_30%_25%,var(--ess-paper),var(--ess-mist-200))] text-[2rem] leading-none shadow-[inset_0_-3px_6px_rgb(18_33_46/0.08),0_3px_8px_rgb(18_33_46/0.10)] duration-200 zoom-in-90"
+                        aria-hidden="true"
+                        >{{ roleEmoji[role] ?? '👤' }}</span
+                    >
+                    <div class="min-w-0 flex-1">
+                        <NativeSelect
+                            id="role"
+                            v-model="role"
+                            name="role"
+                            class="h-[60px]"
+                            :aria-invalid="errors.role ? true : undefined"
+                        >
+                            <option value="" disabled>
+                                {{ t('auth.register.chooseRole') }}
+                            </option>
+                            <option
+                                v-for="option in roles"
+                                :key="option.value"
+                                :value="option.value"
+                            >
+                                {{ option.label }}
+                            </option>
+                        </NativeSelect>
+                    </div>
+                </div>
+                <p class="text-xs text-ess-slate">
+                    {{ t('auth.register.roleHint') }}
+                </p>
+                <InputError :message="errors.role" />
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div class="grid content-start gap-2">
+                    <Label for="name">{{ t('common.fullName') }} *</Label>
+                    <Input
+                        id="name"
+                        name="name"
+                        autocomplete="name"
+                        maxlength="100"
+                        :aria-invalid="errors.name ? true : undefined"
+                    />
+                    <InputError :message="errors.name" />
+                </div>
+                <div class="grid content-start gap-2">
+                    <Label for="email">{{ t('common.email') }} *</Label>
+                    <Input
+                        id="email"
+                        type="email"
+                        name="email"
+                        autocomplete="email"
+                        maxlength="254"
+                        :aria-invalid="errors.email ? true : undefined"
+                    />
+                    <InputError :message="errors.email" />
+                    <p v-if="errors.email" class="flex gap-3 text-sm">
+                        <TextLink :href="login()">{{
+                            t('common.logIn')
+                        }}</TextLink>
+                        <TextLink :href="request()">{{
+                            t('auth.login.forgotPassword')
+                        }}</TextLink>
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div class="grid content-start gap-2">
+                    <Label for="organisation">{{
+                        t('auth.register.organisation')
+                    }}</Label>
+                    <Input
+                        id="organisation"
+                        name="organisation"
+                        autocomplete="organization"
+                        maxlength="150"
+                        :aria-invalid="errors.organisation ? true : undefined"
+                    />
+                    <InputError :message="errors.organisation" />
+                </div>
+                <div class="grid content-start gap-2">
+                    <Label for="wilaya_id"
+                        >{{ t('auth.register.wilaya') }} *</Label
+                    >
+                    <NativeSelect
+                        id="wilaya_id"
+                        name="wilaya_id"
+                        :aria-invalid="errors.wilaya_id ? true : undefined"
+                    >
+                        <option value="">
+                            {{ t('auth.register.chooseWilaya') }}
+                        </option>
+                        <option
+                            v-for="option in wilayas"
+                            :key="option.value"
+                            :value="option.value"
+                        >
+                            {{ option.label }}
+                        </option>
+                    </NativeSelect>
+                    <InputError :message="errors.wilaya_id" />
+                </div>
+            </div>
+
+            <div v-if="role === 'accompagnateur'" class="grid gap-2">
+                <Label for="fonction"
+                    >{{ t('auth.register.fonction') }} *</Label
+                >
                 <Input
-                    id="name"
-                    type="text"
-                    required
-                    v-focus
-                    :tabindex="1"
-                    autocomplete="name"
-                    name="name"
-                    :placeholder="t('common.fullName')"
+                    id="fonction"
+                    name="fonction"
+                    maxlength="150"
+                    :aria-invalid="errors.fonction ? true : undefined"
                 />
-                <InputError :message="errors.name" />
+                <InputError :message="errors.fonction" />
+            </div>
+
+            <div v-if="role === 'formateur'" class="grid gap-4">
+                <div class="grid gap-2">
+                    <Label for="linkedin_url">{{
+                        t('auth.register.linkedin')
+                    }}</Label>
+                    <Input
+                        id="linkedin_url"
+                        type="url"
+                        name="linkedin_url"
+                        maxlength="300"
+                        :placeholder="linkedinPlaceholder"
+                        :aria-invalid="errors.linkedin_url ? true : undefined"
+                    />
+                    <InputError :message="errors.linkedin_url" />
+                </div>
+                <div class="grid gap-2">
+                    <Label for="education"
+                        >{{ t('auth.register.education') }} *</Label
+                    >
+                    <Input
+                        id="education"
+                        name="education"
+                        maxlength="300"
+                        :aria-invalid="errors.education ? true : undefined"
+                    />
+                    <InputError :message="errors.education" />
+                </div>
+                <div class="grid gap-2">
+                    <Label for="cv">{{ t('auth.register.cv') }} *</Label>
+                    <Input
+                        id="cv"
+                        type="file"
+                        name="cv"
+                        accept=".pdf,.doc,.docx"
+                        class="py-2"
+                        :aria-invalid="errors.cv ? true : undefined"
+                    />
+                    <p class="text-xs text-ess-slate">
+                        {{ t('auth.register.cvHint') }}
+                    </p>
+                    <InputError :message="errors.cv" />
+                </div>
             </div>
 
             <div class="grid gap-2">
-                <Label for="email">{{ t('common.emailAddress') }}</Label>
-                <Input
-                    id="email"
-                    type="email"
-                    required
-                    :tabindex="2"
-                    autocomplete="email"
-                    name="email"
-                    placeholder="email@example.com"
-                />
-                <InputError :message="errors.email" />
-            </div>
-
-            <div class="grid gap-2">
-                <Label for="password">{{ t('common.password') }}</Label>
+                <Label for="password">{{ t('common.password') }} *</Label>
                 <PasswordInput
                     id="password"
-                    required
-                    :tabindex="3"
-                    autocomplete="new-password"
                     name="password"
-                    :placeholder="t('common.password')"
+                    autocomplete="new-password"
+                    maxlength="64"
+                    toggle="text"
+                    aria-describedby="password-hint"
                     :passwordrules="passwordRules"
+                    :aria-invalid="errors.password ? true : undefined"
                 />
+                <p id="password-hint" class="text-xs text-ess-slate">
+                    {{ t('auth.register.passwordHint') }}
+                </p>
                 <InputError :message="errors.password" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="password_confirmation">{{
-                    t('common.confirmPassword')
-                }}</Label>
+                <Label for="password_confirmation"
+                    >{{ t('common.confirmPassword') }} *</Label
+                >
                 <PasswordInput
                     id="password_confirmation"
-                    required
-                    :tabindex="4"
-                    autocomplete="new-password"
                     name="password_confirmation"
-                    :placeholder="t('common.confirmPassword')"
+                    autocomplete="new-password"
+                    maxlength="64"
+                    toggle="none"
                     :passwordrules="passwordRules"
                 />
-                <InputError :message="errors.password_confirmation" />
+            </div>
+
+            <div class="grid gap-2">
+                <label class="flex items-start gap-3 text-sm text-ess-slate">
+                    <input
+                        type="checkbox"
+                        name="terms"
+                        value="1"
+                        class="mt-0.5 size-[18px] flex-none accent-ess-blue"
+                    />
+                    <i18n-t keypath="auth.register.terms" tag="span">
+                        <template #terms>
+                            <a
+                                :href="publicUrl(locale, termsLink)"
+                                target="_blank"
+                                rel="noopener"
+                                class="text-ess-blue hover:underline"
+                                >{{ t(termsLink.label) }}</a
+                            >
+                        </template>
+                        <template #privacy>
+                            <a
+                                :href="publicUrl(locale, privacyLink)"
+                                target="_blank"
+                                rel="noopener"
+                                class="text-ess-blue hover:underline"
+                                >{{ t(privacyLink.label) }}</a
+                            >
+                        </template>
+                    </i18n-t>
+                </label>
+                <InputError :message="errors.terms" />
             </div>
 
             <Button
                 type="submit"
-                class="mt-2 w-full"
-                tabindex="5"
+                variant="accent"
+                block
                 :disabled="processing"
                 data-test="register-user-button"
             >
                 <Spinner v-if="processing" />
+                <Check v-else class="size-4" aria-hidden="true" />
                 {{ t('auth.register.submit') }}
             </Button>
-        </div>
-
-        <div class="text-center text-sm text-muted-foreground">
-            {{ t('auth.register.haveAccount') }}
-            <TextLink
-                :href="login()"
-                class="underline underline-offset-4"
-                :tabindex="6"
-                >{{ t('common.logIn') }}</TextLink
-            >
-        </div>
-    </Form>
+        </Form>
+    </AuthCard>
 </template>

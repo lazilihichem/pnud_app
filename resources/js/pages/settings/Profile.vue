@@ -3,13 +3,13 @@ import { Form, Head, usePage } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
-import DeleteUser from '@/components/DeleteUser.vue';
-import Heading from '@/components/Heading.vue';
-import InputError from '@/components/InputError.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import UpdateProfileController from '@/actions/App/Http/Controllers/Accounts/UpdateProfileController';
+import DeleteUser from '@/components/settings/DeleteUser.vue';
+import Heading from '@/components/typography/Heading.vue';
+import InputError from '@/components/forms/InputError.vue';
+import { Button } from '@/components/basic/button';
+import { Input } from '@/components/basic/input';
+import { Label } from '@/components/basic/label';
 import { edit } from '@/routes/platform/profile';
 import { send } from '@/routes/verification';
 
@@ -42,7 +42,7 @@ const { t } = useI18n();
         />
 
         <Form
-            v-bind="ProfileController.update.form()"
+            v-bind="UpdateProfileController.form()"
             class="space-y-6"
             v-slot="{ errors, processing }"
         >
@@ -81,7 +81,7 @@ const { t } = useI18n();
                     <Link
                         :href="send()"
                         as="button"
-                        class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                        class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
                     >
                         {{ t('settings.profile.resendVerification') }}
                     </Link>

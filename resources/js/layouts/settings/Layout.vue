@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
-import Heading from '@/components/Heading.vue';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import Heading from '@/components/typography/Heading.vue';
+import { Button } from '@/components/basic/button';
+import { Separator } from '@/components/basic/separator';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { toUrl } from '@/lib/utils';
-import { edit as editAppearance } from '@/routes/platform/appearance';
 import { edit as editProfile } from '@/routes/platform/profile';
 import { edit as editSecurity } from '@/routes/platform/security';
 import type { NavItem } from '@/types';
@@ -21,10 +20,6 @@ const sidebarNavItems: NavItem[] = [
     {
         title: 'settings.nav.security',
         href: editSecurity(),
-    },
-    {
-        title: 'settings.nav.appearance',
-        href: editAppearance(),
     },
 ];
 
