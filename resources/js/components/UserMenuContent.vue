@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { Link, router, usePage } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import { Languages, LogOut, Settings } from '@lucide/vue';
-import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
     DropdownMenuGroup,
@@ -10,9 +9,9 @@ import {
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import UserInfo from '@/components/UserInfo.vue';
-import { currentLocale, locales, localizedUrl } from '@/i18n';
+import { useLocale } from '@/composables/useLocale';
 import { logout } from '@/routes';
-import { edit } from '@/routes/profile';
+import { edit } from '@/routes/platform/profile';
 import type { User } from '@/types';
 
 type Props = {
@@ -26,14 +25,8 @@ const handleLogout = () => {
 defineProps<Props>();
 
 const { t } = useI18n();
-const page = usePage();
-
 // Plain links (full page loads): route URLs and layout props are built for one locale.
-const otherLocales = computed(() =>
-    locales
-        .filter((locale) => locale !== currentLocale)
-        .map((locale) => ({ locale, href: localizedUrl(locale, page.url) })),
-);
+const { alternateLocales } = useLocale();
 </script>
 
 <template>
@@ -51,7 +44,7 @@ const otherLocales = computed(() =>
             </Link>
         </DropdownMenuItem>
         <DropdownMenuItem
-            v-for="item in otherLocales"
+            v-for="item in alternateLocales"
             :key="item.locale"
             :as-child="true"
         >

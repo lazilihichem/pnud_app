@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\HandlePublicRequests;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,19 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->configureServerSideRendering();
+    }
+
+    /**
+     * Server-side render only the public pages (requests marked by HandlePublicRequests).
+     *
+     * The condition is evaluated per response, and a registered condition replaces the
+     * inertia.ssr.enabled config check, so that setting is honoured here as well.
+     */
+    protected function configureServerSideRendering(): void
+    {
+        Inertia::disableSsr(fn (): bool => ! config('inertia.ssr.enabled')
+            || request()->attributes->get(HandlePublicRequests::SSR_ATTRIBUTE) !== true);
     }
 
     /**

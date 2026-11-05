@@ -20,9 +20,9 @@ export type Locale = (typeof locales)[number];
 
 export type Direction = 'ltr' | 'rtl';
 
-const rtlLocales: readonly Locale[] = ['ar'];
+export const defaultLocale: Locale = 'fr';
 
-const defaultLocale: Locale = 'fr';
+const rtlLocales: readonly Locale[] = ['ar'];
 
 const messages: Record<Locale, MessageSchema> = { fr, ar };
 
@@ -38,29 +38,41 @@ export function directionFor(locale: Locale): Direction {
 }
 
 /**
- * The server renders <html lang="…"> from the /{locale} URL segment, so it is
- * the source of truth before any page or route module is evaluated.
+ * Create the vue-i18n instance for one app (one page load, or one SSR render).
  */
-function documentLocale(): Locale {
+export function createAppI18n(locale: Locale) {
+    return createI18n<[MessageSchema], Locale, false>({
+        legacy: false,
+        locale,
+        fallbackLocale: defaultLocale,
+        messages,
+    });
+}
+
+/**
+ * In the browser, the server-rendered <html lang="…"> (from the /{locale} URL
+ * segment) is known before any page or route module is evaluated.
+ */
+export function documentLocale(): Locale {
     const lang =
         typeof document === 'undefined' ? null : document.documentElement.lang;
 
     return isLocale(lang) ? lang : defaultLocale;
 }
 
-export const currentLocale: Locale = documentLocale();
+let resolveActiveLocale: () => Locale = documentLocale;
 
-export const currentDirection: Direction = directionFor(currentLocale);
+/**
+ * Replace how the active locale is resolved. The SSR server uses this to scope
+ * the locale to each render request.
+ */
+export function setActiveLocaleResolver(resolver: () => Locale): void {
+    resolveActiveLocale = resolver;
+}
 
-export const i18n = createI18n<[MessageSchema], Locale, false>({
-    legacy: false,
-    locale: currentLocale,
-    fallbackLocale: defaultLocale,
-    messages,
-});
-
-// Every Wayfinder route function fills {locale} from the current locale.
-setUrlDefaults({ locale: currentLocale });
+// Every Wayfinder route function fills {locale} from the active locale. This runs
+// when the module is first imported, before any page module builds a route URL.
+setUrlDefaults(() => ({ locale: resolveActiveLocale() }));
 
 /**
  * Build the URL of the current page in another locale (/fr/settings → /ar/settings).

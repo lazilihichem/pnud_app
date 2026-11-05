@@ -8,7 +8,7 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
-import { dashboard } from '@/routes';
+import { dashboard } from '@/routes/platform';
 import { login, loginOptions } from '@/routes/passkey';
 
 type Props = {

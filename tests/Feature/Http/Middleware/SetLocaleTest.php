@@ -103,7 +103,7 @@ class SetLocaleTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect('/ar/dashboard');
+        $response->assertRedirect('/ar/platform/dashboard');
         $this->assertAuthenticatedAs($user);
     }
 
@@ -119,7 +119,7 @@ class SetLocaleTest extends TestCase
 
     public function test_guest_is_redirected_to_the_login_page_in_the_requested_locale(): void
     {
-        $response = $this->get('/ar/dashboard');
+        $response = $this->get('/ar/platform/dashboard');
 
         $response->assertRedirect('/ar/login');
     }

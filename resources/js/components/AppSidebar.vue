@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import { BookOpen, FolderGit2, LayoutGrid } from '@lucide/vue';
-import { currentDirection } from '@/i18n';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -15,7 +15,8 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard } from '@/routes/platform';
+import { useLocale } from '@/composables/useLocale';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -40,7 +41,8 @@ const footerNavItems: NavItem[] = [
 ];
 
 // The sidebar sits on the reading-start side: right in Arabic, left in French.
-const side = currentDirection === 'rtl' ? 'right' : 'left';
+const { direction } = useLocale();
+const side = computed(() => (direction.value === 'rtl' ? 'right' : 'left'));
 </script>
 
 <template>

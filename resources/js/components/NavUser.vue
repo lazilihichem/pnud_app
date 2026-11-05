@@ -15,14 +15,17 @@ import {
 } from '@/components/ui/sidebar';
 import UserInfo from '@/components/UserInfo.vue';
 import UserMenuContent from '@/components/UserMenuContent.vue';
-import { currentDirection } from '@/i18n';
+import { useLocale } from '@/composables/useLocale';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 const { isMobile, state } = useSidebar();
 
 // Mirror the collapsed-sidebar menu placement in right-to-left locales.
-const collapsedSide = currentDirection === 'rtl' ? 'right' : 'left';
+const { direction } = useLocale();
+const collapsedSide = computed(() =>
+    direction.value === 'rtl' ? 'right' : 'left',
+);
 </script>
 
 <template>

@@ -35,9 +35,9 @@ import {
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { getInitials } from '@/composables/useInitials';
-import { currentDirection } from '@/i18n';
+import { useLocale } from '@/composables/useLocale';
 import { toUrl } from '@/lib/utils';
-import { dashboard } from '@/routes';
+import { dashboard } from '@/routes/platform';
 import type { BreadcrumbItem, NavItem } from '@/types';
 
 type Props = {
@@ -54,7 +54,10 @@ const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
 const { t } = useI18n();
 
 // The mobile menu slides in from the reading-start side.
-const sheetSide = currentDirection === 'rtl' ? 'right' : 'left';
+const { direction } = useLocale();
+const sheetSide = computed(() =>
+    direction.value === 'rtl' ? 'right' : 'left',
+);
 
 const activeItemStyles =
     'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';

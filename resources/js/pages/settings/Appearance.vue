@@ -3,7 +3,7 @@ import { Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AppearanceTabs from '@/components/AppearanceTabs.vue';
 import Heading from '@/components/Heading.vue';
-import { edit } from '@/routes/appearance';
+import { edit } from '@/routes/platform/appearance';
 
 defineOptions({
     layout: {

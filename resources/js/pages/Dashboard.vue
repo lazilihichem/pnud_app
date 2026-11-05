@@ -2,7 +2,7 @@
 import { Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
-import { dashboard } from '@/routes';
+import { dashboard } from '@/routes/platform';
 
 defineOptions({
     layout: {

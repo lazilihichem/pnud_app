@@ -37,7 +37,7 @@ class SetLocale
 
         // Fortify reads its redirect paths at response time; keep them in the current locale.
         config([
-            'fortify.home' => "/{$locale}/dashboard",
+            'fortify.home' => "/{$locale}/platform/dashboard",
             'fortify.redirects.logout' => "/{$locale}",
         ]);
 

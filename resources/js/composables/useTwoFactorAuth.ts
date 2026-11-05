@@ -1,7 +1,7 @@
 import { useHttp } from '@inertiajs/vue3';
 import type { ComputedRef, Ref } from 'vue';
 import { computed, ref } from 'vue';
-import { i18n } from '@/i18n';
+import { useI18n } from 'vue-i18n';
 import { qrCode, recoveryCodes, secretKey } from '@/routes/two-factor';
 
 export type UseTwoFactorAuthReturn = {
@@ -30,6 +30,7 @@ const hasSetupData = computed<boolean>(
 
 export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
     const http = useHttp();
+    const { t } = useI18n();
 
     const fetchQrCode = async (): Promise<void> => {
         try {
@@ -40,9 +41,7 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
 
             qrCodeSvg.value = svg;
         } catch {
-            errors.value.push(
-                i18n.global.t('settings.twoFactor.fetchQrCodeFailed'),
-            );
+            errors.value.push(t('settings.twoFactor.fetchQrCodeFailed'));
             qrCodeSvg.value = null;
         }
     };
@@ -55,9 +54,7 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
 
             manualSetupKey.value = key;
         } catch {
-            errors.value.push(
-                i18n.global.t('settings.twoFactor.fetchSetupKeyFailed'),
-            );
+            errors.value.push(t('settings.twoFactor.fetchSetupKeyFailed'));
             manualSetupKey.value = null;
         }
     };
@@ -85,9 +82,7 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
                 recoveryCodes(),
             )) as string[];
         } catch {
-            errors.value.push(
-                i18n.global.t('settings.twoFactor.fetchRecoveryCodesFailed'),
-            );
+            errors.value.push(t('settings.twoFactor.fetchRecoveryCodesFailed'));
             recoveryCodesList.value = [];
         }
     };

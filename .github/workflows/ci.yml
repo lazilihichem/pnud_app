@@ -96,8 +96,9 @@ jobs:
           cp .env.example .env
           php artisan key:generate --no-interaction
 
+      # Builds the client and the SSR bundles, so a broken SSR entry fails CI
       - name: Build frontend assets
-        run: npm run build
+        run: npm run build:ssr
 
       # Tests use in-memory SQLite (see phpunit.xml), so no database service is needed
       - name: Run tests

@@ -1,53 +1,32 @@
 // i18n must load first: it sets Wayfinder's {locale} URL default before any page module runs.
-import {
-    currentDirection,
-    currentLocale,
-    i18n,
-    isLocale,
-    localizedUrl,
-} from '@/i18n';
+import { documentLocale, isLocale, localizedUrl } from '@/i18n';
 import { createInertiaApp, router } from '@inertiajs/vue3';
 import { ConfigProvider } from 'reka-ui';
-import { createApp, h } from 'vue';
+import { createApp, createSSRApp, h } from 'vue';
 import { initializeTheme } from '@/composables/useAppearance';
-import AppLayout from '@/layouts/AppLayout.vue';
-import AuthLayout from '@/layouts/AuthLayout.vue';
-import SettingsLayout from '@/layouts/settings/Layout.vue';
+import { configureApp, layout, resolve, title } from '@/lib/inertiaApp';
 import { initializeFlashToast } from '@/lib/flashToast';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-
 void createInertiaApp({
-    title: (title) => (title ? `${title} - ${appName}` : appName),
-    layout: (name) => {
-        switch (true) {
-            case name === 'Welcome':
-                return null;
-            case name.startsWith('auth/'):
-                return AuthLayout;
-            case name.startsWith('settings/'):
-                return [AppLayout, SettingsLayout];
-            default:
-                return AppLayout;
-        }
-    },
+    resolve,
+    title,
+    layout,
     setup({ el, App, props, plugin }) {
-        const app = createApp({
+        const page = props.initialPage;
+
+        // Public pages arrive server-rendered and are hydrated; others are mounted.
+        const createVueApp =
+            el?.dataset.serverRendered === 'true' ? createSSRApp : createApp;
+
+        const app = createVueApp({
             render: () =>
-                h(ConfigProvider, { dir: currentDirection }, () =>
+                h(ConfigProvider, { dir: page.props.direction }, () =>
                     h(App, props),
                 ),
         });
 
-        app.directive('focus', {
-            mounted: (el: HTMLElement, shouldFocus) => {
-                if (shouldFocus.value !== false) {
-                    el.focus();
-                }
-            },
-        });
-
-        app.use(plugin).use(i18n);
+        configureApp(app, page);
+        app.use(plugin);
 
         if (el) {
             app.mount(el);
@@ -63,7 +42,7 @@ void createInertiaApp({
 router.on('navigate', (event) => {
     const pageLocale = event.detail.page.props.locale;
 
-    if (isLocale(pageLocale) && pageLocale !== currentLocale) {
+    if (isLocale(pageLocale) && pageLocale !== documentLocale()) {
         window.location.href = localizedUrl(pageLocale, event.detail.page.url);
     }
 });
