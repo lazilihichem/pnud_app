@@ -1,5 +1,6 @@
 import type { Directive } from 'vue';
 import type { Auth } from '@/types/auth';
+import type { Locale } from '@/i18n';
 import type { FlashToast } from '@/types/ui';
 
 // Vite declares ImportMetaEnv globally, so it has to be extended globally too
@@ -18,6 +19,9 @@ declare module '@inertiajs/core' {
             name: string;
             auth: Auth;
             sidebarOpen: boolean;
+            locale: Locale;
+            locales: Locale[];
+            direction: 'ltr' | 'rtl';
             [key: string]: unknown;
         };
     }

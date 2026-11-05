@@ -78,9 +78,24 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'fr'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Supported Locales
+    |--------------------------------------------------------------------------
+    |
+    | The locales the application is available in. Every page route is
+    | prefixed with one of them (e.g. /fr/dashboard, /ar/dashboard).
+    | Right-to-left locales are rendered with dir="rtl".
+    |
+    */
+
+    'supported_locales' => ['fr', 'ar'],
+
+    'rtl_locales' => ['ar'],
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 

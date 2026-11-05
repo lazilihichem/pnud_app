@@ -1,0 +1,181 @@
+{
+    "common": {
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "continue": "Continuer",
+        "confirm": "Confirmer",
+        "back": "Retour",
+        "close": "Fermer",
+        "remove": "Supprimer",
+        "name": "Nom",
+        "fullName": "Nom complet",
+        "email": "E-mail",
+        "emailAddress": "Adresse e-mail",
+        "password": "Mot de passe",
+        "confirmPassword": "Confirmer le mot de passe",
+        "showPassword": "Afficher le mot de passe",
+        "hidePassword": "Masquer le mot de passe",
+        "logIn": "Se connecter",
+        "logOut": "Se déconnecter",
+        "register": "S'inscrire",
+        "somethingWentWrong": "Une erreur est survenue."
+    },
+    "nav": {
+        "platform": "Plateforme",
+        "dashboard": "Tableau de bord",
+        "settings": "Paramètres",
+        "repository": "Dépôt",
+        "documentation": "Documentation",
+        "navigationMenu": "Menu de navigation",
+        "search": "Rechercher"
+    },
+    "language": {
+        "label": "Langue",
+        "fr": "Français",
+        "ar": "العربية"
+    },
+    "auth": {
+        "login": {
+            "pageTitle": "Connexion",
+            "title": "Connectez-vous à votre compte",
+            "description": "Saisissez votre adresse e-mail et votre mot de passe pour vous connecter",
+            "forgotPassword": "Mot de passe oublié ?",
+            "rememberMe": "Se souvenir de moi",
+            "noAccount": "Vous n'avez pas de compte ?",
+            "signUp": "S'inscrire"
+        },
+        "register": {
+            "pageTitle": "Inscription",
+            "title": "Créer un compte",
+            "description": "Saisissez vos informations ci-dessous pour créer votre compte",
+            "submit": "Créer le compte",
+            "haveAccount": "Vous avez déjà un compte ?"
+        },
+        "forgotPassword": {
+            "title": "Mot de passe oublié",
+            "description": "Saisissez votre adresse e-mail pour recevoir un lien de réinitialisation",
+            "submit": "Envoyer le lien de réinitialisation",
+            "returnTo": "Ou revenir à la",
+            "logIn": "connexion"
+        },
+        "resetPassword": {
+            "title": "Réinitialiser le mot de passe",
+            "description": "Veuillez saisir votre nouveau mot de passe ci-dessous",
+            "submit": "Réinitialiser le mot de passe"
+        },
+        "verifyEmail": {
+            "title": "Vérification de l'e-mail",
+            "description": "Veuillez vérifier votre adresse e-mail en cliquant sur le lien que nous venons de vous envoyer.",
+            "linkSent": "Un nouveau lien de vérification a été envoyé à l'adresse e-mail que vous avez fournie lors de l'inscription.",
+            "resend": "Renvoyer l'e-mail de vérification"
+        },
+        "confirmPassword": {
+            "title": "Confirmer le mot de passe",
+            "description": "Cette zone de l'application est sécurisée. Veuillez confirmer votre mot de passe avant de continuer.",
+            "withPasskey": "Confirmer avec une clé d'accès",
+            "confirming": "Confirmation...",
+            "orWithPassword": "Ou confirmer avec le mot de passe"
+        },
+        "twoFactorChallenge": {
+            "pageTitle": "Authentification à deux facteurs",
+            "codeTitle": "Code d'authentification",
+            "codeDescription": "Saisissez le code d'authentification fourni par votre application d'authentification.",
+            "useRecoveryCode": "vous connecter avec un code de récupération",
+            "recoveryTitle": "Code de récupération",
+            "recoveryDescription": "Veuillez confirmer l'accès à votre compte en saisissant l'un de vos codes de récupération d'urgence.",
+            "useAuthenticationCode": "vous connecter avec un code d'authentification",
+            "recoveryPlaceholder": "Saisissez le code de récupération",
+            "orYouCan": "ou vous pouvez"
+        }
+    },
+    "passkeys": {
+        "title": "Clés d'accès",
+        "description": "Gérez vos clés d'accès pour vous connecter sans mot de passe",
+        "signIn": "Se connecter avec une clé d'accès",
+        "authenticating": "Authentification...",
+        "orContinueWithEmail": "Ou continuer avec l'e-mail",
+        "emptyTitle": "Aucune clé d'accès pour le moment",
+        "emptyDescription": "Ajoutez une clé d'accès pour vous connecter sans mot de passe",
+        "notSupported": "Les clés d'accès ne sont pas prises en charge par ce navigateur.",
+        "add": "Ajouter une clé d'accès",
+        "nameLabel": "Nom de la clé d'accès",
+        "namePlaceholder": "ex. : MacBook Pro, iPhone",
+        "nameHelp": "Un nom vous aide à identifier cette clé d'accès plus tard.",
+        "register": "Enregistrer la clé d'accès",
+        "registering": "Enregistrement...",
+        "added": "Ajoutée {time}",
+        "lastUsed": "Dernière utilisation {time}",
+        "removeTitle": "Supprimer la clé d'accès",
+        "removeConfirm": "Voulez-vous vraiment supprimer la clé d'accès « {name} » ? Vous ne pourrez plus l'utiliser pour vous connecter.",
+        "removing": "Suppression..."
+    },
+    "settings": {
+        "title": "Paramètres",
+        "description": "Gérez votre profil et les paramètres de votre compte",
+        "nav": {
+            "profile": "Profil",
+            "security": "Sécurité",
+            "appearance": "Apparence"
+        },
+        "profile": {
+            "pageTitle": "Paramètres du profil",
+            "title": "Profil",
+            "description": "Mettez à jour votre nom et votre adresse e-mail",
+            "unverified": "Votre adresse e-mail n'est pas vérifiée.",
+            "resendVerification": "Cliquez ici pour renvoyer l'e-mail de vérification.",
+            "linkSent": "Un nouveau lien de vérification a été envoyé à votre adresse e-mail."
+        },
+        "security": {
+            "pageTitle": "Paramètres de sécurité",
+            "updatePassword": "Modifier le mot de passe",
+            "updatePasswordDescription": "Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester sécurisé",
+            "currentPassword": "Mot de passe actuel",
+            "newPassword": "Nouveau mot de passe"
+        },
+        "appearance": {
+            "pageTitle": "Paramètres d'apparence",
+            "description": "Modifiez les paramètres d'apparence de votre compte",
+            "light": "Clair",
+            "dark": "Sombre",
+            "system": "Système"
+        },
+        "deleteAccount": {
+            "title": "Supprimer le compte",
+            "description": "Supprimez votre compte et toutes ses ressources",
+            "warning": "Attention",
+            "warningDescription": "Veuillez procéder avec prudence, cette action est irréversible.",
+            "confirmTitle": "Voulez-vous vraiment supprimer votre compte ?",
+            "confirmDescription": "Une fois votre compte supprimé, toutes ses ressources et données seront définitivement effacées. Veuillez saisir votre mot de passe pour confirmer la suppression définitive de votre compte."
+        },
+        "twoFactor": {
+            "title": "Authentification à deux facteurs",
+            "description": "Gérez vos paramètres d'authentification à deux facteurs",
+            "disabledInfo": "Lorsque vous activez l'authentification à deux facteurs, un code sécurisé vous sera demandé lors de la connexion. Ce code peut être obtenu depuis une application compatible TOTP sur votre téléphone.",
+            "enabledInfo": "Un code sécurisé et aléatoire vous sera demandé lors de la connexion. Vous pouvez l'obtenir depuis l'application compatible TOTP sur votre téléphone.",
+            "continueSetup": "Poursuivre la configuration",
+            "enable": "Activer la 2FA",
+            "disable": "Désactiver la 2FA",
+            "enabledTitle": "Authentification à deux facteurs activée",
+            "enabledDescription": "L'authentification à deux facteurs est maintenant activée. Scannez le code QR ou saisissez la clé de configuration dans votre application d'authentification.",
+            "verifyTitle": "Vérifier le code d'authentification",
+            "verifyDescription": "Saisissez le code à 6 chiffres de votre application d'authentification",
+            "enableTitle": "Activer l'authentification à deux facteurs",
+            "enableDescription": "Pour terminer l'activation, scannez le code QR ou saisissez la clé de configuration dans votre application d'authentification",
+            "manualEntry": "ou saisissez le code manuellement",
+            "fetchQrCodeFailed": "Impossible de récupérer le code QR",
+            "fetchSetupKeyFailed": "Impossible de récupérer la clé de configuration",
+            "fetchRecoveryCodesFailed": "Impossible de récupérer les codes de récupération"
+        },
+        "recoveryCodes": {
+            "title": "Codes de récupération 2FA",
+            "description": "Les codes de récupération vous permettent de retrouver l'accès si vous perdez votre appareil 2FA. Conservez-les dans un gestionnaire de mots de passe sécurisé.",
+            "view": "Afficher les codes de récupération",
+            "hide": "Masquer les codes de récupération",
+            "regenerate": "Régénérer les codes",
+            "usageInfo": "Chaque code de récupération ne peut être utilisé qu'une seule fois et sera supprimé après utilisation. Si vous en avez besoin d'autres, cliquez sur « Régénérer les codes » ci-dessus."
+        }
+    },
+    "welcome": {
+        "pageTitle": "Bienvenue"
+    }
+}

@@ -1,3 +1,5 @@
+import type { TranslationKey } from '@/i18n';
+
 export type User = {
     id: number;
     name: string;
@@ -23,7 +25,7 @@ export type Passkey = {
 };
 
 export type TwoFactorConfigContent = {
-    title: string;
-    description: string;
-    buttonText: string;
+    title: TranslationKey;
+    description: TranslationKey;
+    buttonText: TranslationKey;
 };

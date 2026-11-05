@@ -5,6 +5,7 @@ namespace App\Providers;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -15,7 +16,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Registered before any provider boots, so it also applies to Fortify's routes.
+        $this->configureLocaleRoutes();
     }
 
     /**
@@ -24,6 +26,17 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+    }
+
+    /**
+     * Restrict every {locale} route segment (including Fortify's) to the supported locales.
+     */
+    protected function configureLocaleRoutes(): void
+    {
+        /** @var list<string> $supportedLocales */
+        $supportedLocales = config('app.supported_locales');
+
+        Route::pattern('locale', implode('|', array_map(preg_quote(...), $supportedLocales)));
     }
 
     /**

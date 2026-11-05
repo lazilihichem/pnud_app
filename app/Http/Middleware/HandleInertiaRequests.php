@@ -42,6 +42,9 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'locale' => app()->getLocale(),
+            'locales' => config('app.supported_locales'),
+            'direction' => in_array(app()->getLocale(), config('app.rtl_locales'), true) ? 'rtl' : 'ltr',
         ];
     }
 }

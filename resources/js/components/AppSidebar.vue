@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import { BookOpen, FolderGit2, LayoutGrid } from '@lucide/vue';
+import { currentDirection } from '@/i18n';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -19,7 +20,7 @@ import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'nav.dashboard',
         href: dashboard(),
         icon: LayoutGrid,
     },
@@ -27,20 +28,23 @@ const mainNavItems: NavItem[] = [
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Repository',
+        title: 'nav.repository',
         href: 'https://github.com/laravel/vue-starter-kit',
         icon: FolderGit2,
     },
     {
-        title: 'Documentation',
+        title: 'nav.documentation',
         href: 'https://laravel.com/docs/starter-kits#vue',
         icon: BookOpen,
     },
 ];
+
+// The sidebar sits on the reading-start side: right in Arabic, left in French.
+const side = currentDirection === 'rtl' ? 'right' : 'left';
 </script>
 
 <template>
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon" variant="inset" :side="side">
         <SidebarHeader>
             <SidebarMenu>
                 <SidebarMenuItem>

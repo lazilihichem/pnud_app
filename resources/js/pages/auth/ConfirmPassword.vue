@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
@@ -14,24 +15,25 @@ import PasskeyVerify from '@/components/PasskeyVerify.vue';
 
 defineOptions({
     layout: {
-        title: 'Confirm password',
-        description:
-            'This is a secure area of the application. Please confirm your password before continuing.',
+        title: 'auth.confirmPassword.title',
+        description: 'auth.confirmPassword.description',
     },
 });
+
+const { t } = useI18n();
 </script>
 
 <template>
-    <Head title="Confirm password" />
+    <Head :title="t('auth.confirmPassword.title')" />
 
     <PasskeyVerify
         :routes="{
             options: confirmOptions(),
             submit: confirmStore(),
         }"
-        label="Confirm with passkey"
-        loading-label="Confirming..."
-        separator="Or confirm with password"
+        :label="t('auth.confirmPassword.withPasskey')"
+        :loading-label="t('auth.confirmPassword.confirming')"
+        :separator="t('auth.confirmPassword.orWithPassword')"
     />
 
     <Form
@@ -41,7 +43,7 @@ defineOptions({
     >
         <div class="space-y-6">
             <div class="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{{ t('common.password') }}</Label>
                 <PasswordInput
                     id="password"
                     name="password"
@@ -61,7 +63,7 @@ defineOptions({
                     data-test="confirm-password-button"
                 >
                     <Spinner v-if="processing" />
-                    Confirm password
+                    {{ t('auth.confirmPassword.title') }}
                 </Button>
             </div>
         </div>

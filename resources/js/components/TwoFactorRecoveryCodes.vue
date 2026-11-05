@@ -2,6 +2,7 @@
 import { Form } from '@inertiajs/vue3';
 import { Eye, EyeOff, LockKeyhole, RefreshCw } from '@lucide/vue';
 import { nextTick, onMounted, ref, useTemplateRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 import AlertError from '@/components/AlertError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +17,7 @@ import { regenerateRecoveryCodes } from '@/routes/two-factor';
 
 const { recoveryCodesList, fetchRecoveryCodes, errors } = useTwoFactorAuth();
 const isRecoveryCodesVisible = ref<boolean>(false);
+const { t } = useI18n();
 const recoveryCodeSectionRef = useTemplateRef('recoveryCodeSectionRef');
 
 const toggleRecoveryCodesVisibility = async () => {
@@ -42,11 +44,12 @@ onMounted(async () => {
     <Card class="w-full">
         <CardHeader>
             <CardTitle class="flex gap-3">
-                <LockKeyhole class="size-4" />2FA recovery codes
+                <LockKeyhole class="size-4" />{{
+                    t('settings.recoveryCodes.title')
+                }}
             </CardTitle>
             <CardDescription>
-                Recovery codes let you regain access if you lose your 2FA
-                device. Store them in a secure password manager.
+                {{ t('settings.recoveryCodes.description') }}
             </CardDescription>
         </CardHeader>
         <CardContent>
@@ -58,8 +61,11 @@ onMounted(async () => {
                         :is="isRecoveryCodesVisible ? EyeOff : Eye"
                         class="size-4"
                     />
-                    {{ isRecoveryCodesVisible ? 'Hide' : 'View' }} recovery
-                    codes
+                    {{
+                        isRecoveryCodesVisible
+                            ? t('settings.recoveryCodes.hide')
+                            : t('settings.recoveryCodes.view')
+                    }}
                 </Button>
 
                 <Form
@@ -75,7 +81,8 @@ onMounted(async () => {
                         type="submit"
                         :disabled="processing"
                     >
-                        <RefreshCw /> Regenerate codes
+                        <RefreshCw />
+                        {{ t('settings.recoveryCodes.regenerate') }}
                     </Button>
                 </Form>
             </div>
@@ -93,6 +100,7 @@ onMounted(async () => {
                 <div v-else class="mt-3 space-y-3">
                     <div
                         ref="recoveryCodeSectionRef"
+                        dir="ltr"
                         class="grid gap-1 rounded-lg bg-muted p-4 font-mono text-sm"
                     >
                         <div v-if="!recoveryCodesList.length" class="space-y-2">
@@ -111,10 +119,7 @@ onMounted(async () => {
                         </div>
                     </div>
                     <p class="text-xs text-muted-foreground select-none">
-                        Each recovery code can be used once to access your
-                        account and will be removed after use. If you need more,
-                        click
-                        <span class="font-bold">Regenerate codes</span> above.
+                        {{ t('settings.recoveryCodes.usageInfo') }}
                     </p>
                 </div>
             </div>
