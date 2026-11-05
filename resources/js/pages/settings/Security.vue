@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
-import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
-import Heading from '@/components/Heading.vue';
-import InputError from '@/components/InputError.vue';
-import PasswordInput from '@/components/PasswordInput.vue';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { edit } from '@/routes/security';
-import type { Props as ManagePasskeysProps } from '@/components/ManagePasskeys.vue';
-import ManagePasskeys from '@/components/ManagePasskeys.vue';
-import type { Props as ManageTwoFactorProps } from '@/components/ManageTwoFactor.vue';
-import ManageTwoFactor from '@/components/ManageTwoFactor.vue';
+import UpdatePasswordController from '@/actions/App/Http/Controllers/Accounts/UpdatePasswordController';
+import Heading from '@/components/typography/Heading.vue';
+import InputError from '@/components/forms/InputError.vue';
+import PasswordInput from '@/components/forms/PasswordInput.vue';
+import { Button } from '@/components/basic/button';
+import { Label } from '@/components/basic/label';
+import { edit } from '@/routes/platform/security';
+import type { Props as ManagePasskeysProps } from '@/components/settings/ManagePasskeys.vue';
+import ManagePasskeys from '@/components/settings/ManagePasskeys.vue';
+import type { Props as ManageTwoFactorProps } from '@/components/settings/ManageTwoFactor.vue';
+import ManageTwoFactor from '@/components/settings/ManageTwoFactor.vue';
 
 // oxfmt-ignore
 type Props = {
@@ -45,7 +45,7 @@ defineOptions({
         />
 
         <Form
-            v-bind="SecurityController.update.form()"
+            v-bind="UpdatePasswordController.form()"
             :options="{
                 preserveScroll: true,
             }"
