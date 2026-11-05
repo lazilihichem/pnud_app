@@ -22,6 +22,9 @@ use Illuminate\Support\Facades\Route;
 // Accounts — the profile's home: /{locale}/platform sends each profile to its own page.
 Route::get('/', RedirectToHomeController::class)->name('home');
 
+// The starter-kit dashboard is gone: old links land on the profile's home.
+Route::get('dashboard', fn () => to_route('platform.home'))->name('dashboard');
+
 // Each profile's member space: only that profile may enter (FR-04, « Accès réservé » 403).
 // Pages of a profile go inside its group.
 Route::prefix('entrepreneur')->name('entrepreneur.')->middleware('profile:entrepreneur')->group(function () {
@@ -47,8 +50,6 @@ Route::get('settings/profile', EditProfileController::class)->name('profile.edit
 Route::patch('settings/profile', UpdateProfileController::class)->name('profile.update');
 
 Route::middleware('verified')->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
-
     Route::delete('settings/profile', DeleteAccountController::class)->name('profile.destroy');
 
     Route::get('settings/security', EditSecurityController::class)

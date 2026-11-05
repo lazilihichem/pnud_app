@@ -15,14 +15,14 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/basic/sidebar';
-import { dashboard } from '@/routes/platform';
+import { home } from '@/routes/platform';
 import { useLocale } from '@/composables/useLocale';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'nav.dashboard',
-        href: dashboard(),
+        href: home(),
         icon: LayoutGrid,
     },
 ];
@@ -51,7 +51,7 @@ const side = computed(() => (direction.value === 'rtl' ? 'right' : 'left'));
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
+                        <Link :href="home()">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>

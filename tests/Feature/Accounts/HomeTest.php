@@ -81,6 +81,23 @@ class HomeTest extends TestCase
         $response->assertForbidden();
     }
 
+    public function test_the_former_dashboard_url_leads_to_the_profile_home(): void
+    {
+        $formateur = User::factory()->profile(ProfileType::Formateur)->create();
+
+        $response = $this->actingAs($formateur)->get(route('platform.dashboard'));
+
+        $response->assertRedirect(route('platform.home'));
+        $this->actingAs($formateur)->get(route('platform.home'))->assertRedirect(route('platform.formateur.home'));
+    }
+
+    public function test_guests_opening_the_dashboard_are_sent_to_sign_in(): void
+    {
+        $response = $this->get(route('platform.dashboard'));
+
+        $response->assertRedirect(route('login'));
+    }
+
     public function test_members_cannot_open_the_back_office(): void
     {
         $response = $this->actingAs(User::factory()->create())->get(route('admin.home'));

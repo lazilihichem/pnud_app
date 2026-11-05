@@ -37,7 +37,7 @@ import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { getInitials } from '@/composables/useInitials';
 import { useLocale } from '@/composables/useLocale';
 import { toUrl } from '@/lib/utils';
-import { dashboard } from '@/routes/platform';
+import { home } from '@/routes/platform';
 import type { BreadcrumbItem, NavItem } from '@/types';
 
 type Props = {
@@ -64,7 +64,7 @@ const activeItemStyles = 'text-neutral-900';
 const mainNavItems: NavItem[] = [
     {
         title: 'nav.dashboard',
-        href: dashboard(),
+        href: home(),
         icon: LayoutGrid,
     },
 ];
@@ -154,7 +154,7 @@ const rightNavItems: NavItem[] = [
                     </Sheet>
                 </div>
 
-                <Link :href="dashboard()" class="flex items-center gap-x-2">
+                <Link :href="home()" class="flex items-center gap-x-2">
                     <AppLogo />
                 </Link>
 
