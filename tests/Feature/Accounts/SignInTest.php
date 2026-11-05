@@ -4,7 +4,7 @@ namespace Tests\Feature\Accounts;
 
 use App\Enums\AccountStatus;
 use App\Enums\Locale;
-use App\Enums\UserRole;
+use App\Enums\ProfileType;
 use App\Models\User;
 use App\Notifications\Accounts\SignInCodeNotification;
 use App\Notifications\Accounts\SignInThrottledNotification;
@@ -71,7 +71,7 @@ class SignInTest extends TestCase
 
         $response = $this->signInWithCode($user);
 
-        $response->assertRedirect(route('platform.dashboard'));
+        $response->assertRedirect(route('platform.home'));
         $this->assertAuthenticatedAs($user);
         $this->assertSame('2026-11-05 10:00:00', $user->fresh()->last_login_at->toDateTimeString());
     }
@@ -211,7 +211,7 @@ class SignInTest extends TestCase
 
     public function test_inactive_accompagnateur_can_sign_in(): void
     {
-        $user = User::factory()->role(UserRole::Accompagnateur)->create();
+        $user = User::factory()->profile(ProfileType::Accompagnateur)->create();
 
         $this->signInWithCode($user);
 
@@ -243,7 +243,7 @@ class SignInTest extends TestCase
         $code = $this->deliverSignInCode($user);
 
         $this->travel(4)->minutes();
-        $this->post(route('login.code.verify'), ['code' => $code])->assertRedirect(route('platform.dashboard'));
+        $this->post(route('login.code.verify'), ['code' => $code])->assertRedirect(route('platform.home'));
     }
 
     public function test_expired_code_is_rejected(): void
@@ -299,7 +299,7 @@ class SignInTest extends TestCase
         if ($firstCode !== $secondCode) {
             $this->post(route('login.code.verify'), ['code' => $firstCode])->assertSessionHasErrors('code');
         }
-        $this->post(route('login.code.verify'), ['code' => $secondCode])->assertRedirect(route('platform.dashboard'));
+        $this->post(route('login.code.verify'), ['code' => $secondCode])->assertRedirect(route('platform.home'));
     }
 
     public function test_at_most_3_codes_are_sent_per_15_minutes(): void
@@ -324,14 +324,14 @@ class SignInTest extends TestCase
     {
         $user = User::factory()->create();
         foreach (range(1, 3) as $signIn) {
-            $this->signInWithCode($user)->assertRedirect(route('platform.dashboard'));
+            $this->signInWithCode($user)->assertRedirect(route('platform.home'));
             Auth::logout();
             $this->travel(2)->minutes();
         }
 
         $response = $this->signInWithCode($user);
 
-        $response->assertRedirect(route('platform.dashboard'));
+        $response->assertRedirect(route('platform.home'));
         $this->assertAuthenticatedAs($user);
         Notification::assertSentToTimes($user, SignInCodeNotification::class, 4);
     }
@@ -348,7 +348,7 @@ class SignInTest extends TestCase
     public function test_remember_me_keeps_members_signed_in_but_never_administrators(): void
     {
         $member = User::factory()->create();
-        $admin = User::factory()->role(UserRole::Admin)->status(AccountStatus::Active)->create();
+        $admin = User::factory()->admin()->create();
         $recaller = Auth::guard()->getRecallerName();
 
         $this->signInWithCode($member, remember: true)->assertCookie($recaller);
@@ -421,7 +421,7 @@ class SignInTest extends TestCase
     {
         $response = $this->actingAs(User::factory()->create())->get(route('login'));
 
-        $response->assertRedirect(route('platform.dashboard'));
+        $response->assertRedirect(route('platform.home'));
     }
 
     public function test_users_can_logout(): void

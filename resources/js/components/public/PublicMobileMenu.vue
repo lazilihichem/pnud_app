@@ -18,7 +18,7 @@ import {
 } from '@/components/public/navigation';
 import { useLocale } from '@/composables/useLocale';
 import { login, logout, register } from '@/routes';
-import { dashboard } from '@/routes/platform';
+import { home as platformHome } from '@/routes/platform';
 import { edit as editProfile } from '@/routes/platform/profile';
 
 // Full-screen menu at 1180 px and below (FR-06 step 4).
@@ -64,7 +64,7 @@ const { locale, direction } = useLocale();
             <div class="mt-6 grid gap-3">
                 <template v-if="signedIn">
                     <Button as-child block>
-                        <Link :href="dashboard()">{{
+                        <Link :href="platformHome()">{{
                             t('public.header.mySpace')
                         }}</Link>
                     </Button>

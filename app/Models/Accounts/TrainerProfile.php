@@ -7,7 +7,7 @@ use Database\Factories\Accounts\TrainerProfileFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -16,7 +16,6 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * The Formateur part of an account (ERD: Accounts/TrainerProfile). The CV is a Media in the `cv` collection.
  *
  * @property int $id
- * @property int $user_id
  * @property string|null $linkedin_url
  * @property string $education
  * @property Carbon|null $test_passed_at
@@ -54,10 +53,10 @@ class TrainerProfile extends Model implements HasMedia
     /**
      * The account this profile belongs to.
      *
-     * @return BelongsTo<User, $this>
+     * @return MorphOne<User, $this>
      */
-    public function user(): BelongsTo
+    public function user(): MorphOne
     {
-        return $this->belongsTo(User::class);
+        return $this->morphOne(User::class, 'profilable');
     }
 }

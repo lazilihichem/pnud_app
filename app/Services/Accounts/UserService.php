@@ -3,7 +3,10 @@
 namespace App\Services\Accounts;
 
 use App\Enums\Locale;
-use App\Enums\UserRole;
+use App\Enums\ProfileType;
+use App\Models\Accounts\AccompagnateurProfile;
+use App\Models\Accounts\CitoyenProfile;
+use App\Models\Accounts\EntrepreneurProfile;
 use App\Models\Accounts\TrainerProfile;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -21,9 +24,22 @@ class UserService
      */
     public function register(array $data, Locale $locale): User
     {
-        $role = UserRole::from($data['role']);
+        $type = ProfileType::from($data['role']);
 
-        $user = DB::transaction(function () use ($data, $role, $locale): User {
+        $user = DB::transaction(function () use ($data, $type, $locale): User {
+            $profile = match ($type) {
+                ProfileType::Entrepreneur => EntrepreneurProfile::create(),
+                ProfileType::Citoyen => CitoyenProfile::create(),
+                ProfileType::Accompagnateur => AccompagnateurProfile::create([
+                    'fonction' => $data['fonction'] ?? throw new InvalidArgumentException('An Accompagnateur needs a fonction.'),
+                ]),
+                ProfileType::Formateur => TrainerProfile::create([
+                    'linkedin_url' => $data['linkedin_url'] ?? null,
+                    'education' => $data['education'] ?? throw new InvalidArgumentException('A Formateur needs an education.'),
+                ]),
+                ProfileType::Admin => throw new InvalidArgumentException('Administrators are invited, not registered.'),
+            };
+
             $user = new User([
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -32,26 +48,17 @@ class UserService
                 'wilaya_id' => $data['wilaya_id'],
             ]);
 
+            $user->profile()->associate($profile);
             $user->forceFill([
-                'role' => $role,
-                'status' => $role->initialStatus(),
+                'status' => $type->initialStatus(),
                 'locale' => $locale,
                 'terms_version' => config('accounts.terms_version'),
                 'terms_accepted_at' => now(),
             ])->save();
 
-            match ($role) {
-                UserRole::Accompagnateur => $user->accompagnateurProfile()->create([
-                    'fonction' => $data['fonction'] ?? throw new InvalidArgumentException('An Accompagnateur needs a fonction.'),
-                ]),
-                UserRole::Formateur => $this->createTrainerProfile(
-                    $user,
-                    $data['education'] ?? throw new InvalidArgumentException('A Formateur needs an education.'),
-                    $data['cv'] ?? throw new InvalidArgumentException('A Formateur needs a CV.'),
-                    $data['linkedin_url'] ?? null,
-                ),
-                default => null,
-            };
+            if ($profile instanceof TrainerProfile) {
+                $this->attachCv($profile, $user, $data['cv'] ?? throw new InvalidArgumentException('A Formateur needs a CV.'));
+            }
 
             return $user;
         });
@@ -62,21 +69,14 @@ class UserService
     }
 
     /**
-     * Create the Formateur profile with its CV, held as « En cours de vérification » until scanned.
+     * Store the Formateur's CV on their profile, held as « En cours de vérification » until scanned.
      */
-    private function createTrainerProfile(User $user, string $education, UploadedFile $cv, ?string $linkedinUrl): TrainerProfile
+    private function attachCv(TrainerProfile $profile, User $user, UploadedFile $cv): void
     {
-        $profile = $user->trainerProfile()->create([
-            'linkedin_url' => $linkedinUrl,
-            'education' => $education,
-        ]);
-
         $profile->addMedia($cv)
             ->toMediaCollection(TrainerProfile::CvCollection)
             ->forceFill(['uploaded_by' => $user->id])
             ->save();
-
-        return $profile;
     }
 
     /**

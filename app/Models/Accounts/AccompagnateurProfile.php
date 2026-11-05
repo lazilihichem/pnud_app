@@ -7,13 +7,12 @@ use Database\Factories\Accounts\AccompagnateurProfileFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
  * The Accompagnateur part of an account (ERD: Accounts/AccompagnateurProfile).
  *
  * @property int $id
- * @property int $user_id
  * @property string $fonction
  * @property int $capacity
  * @property string|null $presentation
@@ -27,10 +26,10 @@ class AccompagnateurProfile extends Model
     /**
      * The account this profile belongs to.
      *
-     * @return BelongsTo<User, $this>
+     * @return MorphOne<User, $this>
      */
-    public function user(): BelongsTo
+    public function user(): MorphOne
     {
-        return $this->belongsTo(User::class);
+        return $this->morphOne(User::class, 'profilable');
     }
 }

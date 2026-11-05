@@ -4,8 +4,10 @@ namespace Tests\Feature\Accounts;
 
 use App\Enums\AccountStatus;
 use App\Enums\Locale;
+use App\Enums\ProfileType;
 use App\Enums\ScanStatus;
-use App\Enums\UserRole;
+use App\Models\Accounts\AccompagnateurProfile;
+use App\Models\Accounts\EntrepreneurProfile;
 use App\Models\Accounts\TrainerProfile;
 use App\Models\Reference\Wilaya;
 use App\Models\User;
@@ -40,11 +42,11 @@ class RegistrationTest extends TestCase
      * @param  array<string, mixed>  $overrides
      * @return array<string, mixed>
      */
-    private function payload(UserRole $role = UserRole::Entrepreneur, array $overrides = []): array
+    private function payload(ProfileType $role = ProfileType::Entrepreneur, array $overrides = []): array
     {
         $profileFields = match ($role) {
-            UserRole::Accompagnateur => ['fonction' => 'Chargée d\'incubation'],
-            UserRole::Formateur => [
+            ProfileType::Accompagnateur => ['fonction' => 'Chargée d\'incubation'],
+            ProfileType::Formateur => [
                 'linkedin_url' => 'https://www.linkedin.com/in/formateur',
                 'education' => 'Master en économie sociale',
                 'cv' => UploadedFile::fake()->create('cv.pdf', 200, 'application/pdf'),
@@ -78,29 +80,30 @@ class RegistrationTest extends TestCase
     }
 
     /**
-     * @return array<string, array{UserRole, AccountStatus}>
+     * @return array<string, array{ProfileType, AccountStatus}>
      */
     public static function initialStatuses(): array
     {
         return [
-            'entrepreneur is active' => [UserRole::Entrepreneur, AccountStatus::Active],
-            'citoyen is active' => [UserRole::Citoyen, AccountStatus::Active],
-            'accompagnateur is inactive' => [UserRole::Accompagnateur, AccountStatus::NotValidated],
-            'formateur has qualification to pass' => [UserRole::Formateur, AccountStatus::NotQualified],
+            'entrepreneur is active' => [ProfileType::Entrepreneur, AccountStatus::Active],
+            'citoyen is active' => [ProfileType::Citoyen, AccountStatus::Active],
+            'accompagnateur is inactive' => [ProfileType::Accompagnateur, AccountStatus::NotValidated],
+            'formateur has qualification to pass' => [ProfileType::Formateur, AccountStatus::NotQualified],
         ];
     }
 
     #[DataProvider('initialStatuses')]
-    public function test_registration_creates_the_account_with_the_initial_status_of_the_profile(UserRole $role, AccountStatus $status): void
+    public function test_registration_creates_the_account_with_the_initial_status_of_the_profile(ProfileType $role, AccountStatus $status): void
     {
         $this->travelTo('2026-11-05 10:00:00');
 
         $response = $this->post(route('register.store'), $this->payload($role));
 
         $user = User::query()->sole();
-        $response->assertRedirect(route('platform.dashboard'));
+        $response->assertRedirect(route('platform.home'));
         $this->assertAuthenticatedAs($user);
-        $this->assertSame($role, $user->role);
+        $this->assertSame($role, $user->type);
+        $this->assertInstanceOf($role->modelClass(), $user->profile);
         $this->assertSame($status, $user->status);
         $this->assertSame('Coopérative Tafat', $user->organisation);
         $this->assertSame($this->wilaya->id, $user->wilaya_id);
@@ -113,19 +116,21 @@ class RegistrationTest extends TestCase
 
     public function test_accompagnateur_registration_stores_the_function_on_its_profile(): void
     {
-        $this->post(route('register.store'), $this->payload(UserRole::Accompagnateur));
+        $this->post(route('register.store'), $this->payload(ProfileType::Accompagnateur));
 
-        $profile = User::query()->sole()->accompagnateurProfile;
+        $profile = User::query()->sole()->profile;
+        $this->assertInstanceOf(AccompagnateurProfile::class, $profile);
         $this->assertSame('Chargée d\'incubation', $profile->fonction);
         $this->assertSame(0, $profile->capacity);
     }
 
     public function test_formateur_registration_stores_the_profile_and_a_private_cv_pending_scan(): void
     {
-        $this->post(route('register.store'), $this->payload(UserRole::Formateur));
+        $this->post(route('register.store'), $this->payload(ProfileType::Formateur));
 
         $user = User::query()->sole();
-        $profile = $user->trainerProfile;
+        $profile = $user->profile;
+        $this->assertInstanceOf(TrainerProfile::class, $profile);
         $cv = $profile->getFirstMedia(TrainerProfile::CvCollection);
         $this->assertSame('Master en économie sociale', $profile->education);
         $this->assertSame('https://www.linkedin.com/in/formateur', $profile->linkedin_url);
@@ -137,15 +142,16 @@ class RegistrationTest extends TestCase
 
     public function test_fields_of_another_profile_are_never_stored(): void
     {
-        $this->post(route('register.store'), $this->payload(UserRole::Entrepreneur, [
+        $this->post(route('register.store'), $this->payload(ProfileType::Entrepreneur, [
             'fonction' => 'Consultant',
             'education' => 'Doctorat',
             'cv' => UploadedFile::fake()->create('cv.pdf', 10, 'application/pdf'),
         ]));
 
         $user = User::query()->sole();
-        $this->assertNull($user->accompagnateurProfile);
-        $this->assertNull($user->trainerProfile);
+        $this->assertInstanceOf(EntrepreneurProfile::class, $user->profile);
+        $this->assertDatabaseCount('accompagnateur_profiles', 0);
+        $this->assertDatabaseCount('trainer_profiles', 0);
         $this->assertDatabaseCount('media', 0);
     }
 
@@ -169,7 +175,7 @@ class RegistrationTest extends TestCase
 
     public function test_administrator_profiles_cannot_be_chosen(): void
     {
-        $response = $this->post(route('register.store'), $this->payload(overrides: ['role' => UserRole::Admin->value]));
+        $response = $this->post(route('register.store'), $this->payload(overrides: ['role' => ProfileType::Admin->value]));
 
         $response->assertSessionHasErrors('role');
         $this->assertDatabaseCount('users', 0);
@@ -209,7 +215,7 @@ class RegistrationTest extends TestCase
 
     public function test_missing_required_fields_and_terms_are_reported_with_the_srs_message(): void
     {
-        $response = $this->post(route('register.store'), $this->payload(UserRole::Accompagnateur, [
+        $response = $this->post(route('register.store'), $this->payload(ProfileType::Accompagnateur, [
             'name' => '',
             'wilaya_id' => '',
             'fonction' => '',
@@ -235,7 +241,7 @@ class RegistrationTest extends TestCase
     #[DataProvider('invalidCvs')]
     public function test_cv_must_be_a_pdf_or_word_file_of_at_most_5_mb(UploadedFile $cv): void
     {
-        $response = $this->post(route('register.store'), $this->payload(UserRole::Formateur, ['cv' => $cv]));
+        $response = $this->post(route('register.store'), $this->payload(ProfileType::Formateur, ['cv' => $cv]));
 
         $response->assertSessionHasErrors(['cv' => 'Format accepté : PDF, DOC, DOCX — 5 Mo maximum.']);
         $this->assertDatabaseCount('users', 0);
@@ -245,7 +251,7 @@ class RegistrationTest extends TestCase
     {
         $response = $this->actingAs(User::factory()->create())->get(route('register'));
 
-        $response->assertRedirect(route('platform.dashboard'));
+        $response->assertRedirect(route('platform.home'));
     }
 
     public function test_verification_link_is_valid_for_24_hours(): void

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\Locale;
+use App\Enums\ProfileType;
 use App\Http\Middleware\HandlePublicRequests;
 use App\Models\User;
 use App\Notifications\Accounts\SignInCodeNotification;
@@ -10,6 +11,7 @@ use App\Services\Accounts\Auth\SignInCodeService;
 use App\Services\Accounts\UserService;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -44,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->configureMorphMap();
         $this->configureServerSideRendering();
         $this->configureSignIn();
     }
@@ -62,6 +65,18 @@ class AppServiceProvider extends ServiceProvider
         // Member accounts: 8–64 characters with at least one letter and one digit (FR-01, FR-03).
         // No breached-password lookup: no foreign service may receive platform data (SRS 5.5).
         Password::defaults(fn (): Password => Password::min(8)->max(64)->letters()->numbers());
+    }
+
+    /**
+     * Polymorphic columns store aliases, never class names: the account profiles
+     * (ProfileType values) and the user. Every new polymorphic owner (media, …) must be added.
+     */
+    protected function configureMorphMap(): void
+    {
+        Relation::enforceMorphMap([
+            ...ProfileType::morphMap(),
+            'user' => User::class,
+        ]);
     }
 
     /**

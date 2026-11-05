@@ -2,9 +2,7 @@
 
 namespace Database\Factories\Accounts;
 
-use App\Enums\UserRole;
 use App\Models\Accounts\TrainerProfile;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +18,6 @@ class TrainerProfileFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory()->role(UserRole::Formateur),
             'linkedin_url' => null,
             'education' => fake()->sentence(),
         ];

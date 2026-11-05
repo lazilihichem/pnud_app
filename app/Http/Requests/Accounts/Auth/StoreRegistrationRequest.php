@@ -3,7 +3,7 @@
 namespace App\Http\Requests\Accounts\Auth;
 
 use App\Concerns\PasswordValidationRules;
-use App\Enums\UserRole;
+use App\Enums\ProfileType;
 use App\Models\Reference\Wilaya;
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -43,11 +43,11 @@ class StoreRegistrationRequest extends FormRequest
      */
     public function rules(): array
     {
-        $accompagnateur = UserRole::Accompagnateur->value;
-        $formateur = UserRole::Formateur->value;
+        $accompagnateur = ProfileType::Accompagnateur->value;
+        $formateur = ProfileType::Formateur->value;
 
         return [
-            'role' => ['required', Rule::enum(UserRole::class)->only(UserRole::selfRegistrable())],
+            'role' => ['required', Rule::enum(ProfileType::class)->only(ProfileType::selfRegistrable())],
             'name' => ['required', 'string', 'min:2', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:254', Rule::unique(User::class, 'email')],
             'organisation' => ['nullable', 'string', 'max:150'],

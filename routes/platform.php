@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Accounts\Auth\RedirectToHomeController;
 use App\Http\Controllers\Accounts\DeleteAccountController;
 use App\Http\Controllers\Accounts\EditProfileController;
 use App\Http\Controllers\Accounts\EditSecurityController;
@@ -17,6 +18,27 @@ use Illuminate\Support\Facades\Route;
 | (see routes/web.php) and is named "platform.*".
 |
 */
+
+// Accounts — the profile's home: /{locale}/platform sends each profile to its own page.
+Route::get('/', RedirectToHomeController::class)->name('home');
+
+// Each profile's member space: only that profile may enter (FR-04, « Accès réservé » 403).
+// Pages of a profile go inside its group.
+Route::prefix('entrepreneur')->name('entrepreneur.')->middleware('profile:entrepreneur')->group(function () {
+    Route::inertia('/', 'platform/entrepreneur/Home')->name('home');
+});
+
+Route::prefix('accompagnateur')->name('accompagnateur.')->middleware('profile:accompagnateur')->group(function () {
+    Route::inertia('/', 'platform/accompagnateur/Home')->name('home');
+});
+
+Route::prefix('formateur')->name('formateur.')->middleware('profile:formateur')->group(function () {
+    Route::inertia('/', 'platform/formateur/Home')->name('home');
+});
+
+Route::prefix('citoyen')->name('citoyen.')->middleware('profile:citoyen')->group(function () {
+    Route::inertia('/', 'platform/citoyen/Home')->name('home');
+});
 
 Route::get('settings', fn () => to_route('platform.profile.edit'))->name('settings');
 

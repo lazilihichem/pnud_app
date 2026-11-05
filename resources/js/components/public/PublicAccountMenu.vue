@@ -10,7 +10,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/basic/dropdown-menu';
 import { logout } from '@/routes';
-import { dashboard } from '@/routes/platform';
+import { home as platformHome } from '@/routes/platform';
 import { edit as editProfile } from '@/routes/platform/profile';
 
 // Signed-in account button of the public header (FR-04): initials + name.
@@ -44,7 +44,7 @@ const initials = computed(() =>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" class="min-w-56">
             <DropdownMenuItem as-child>
-                <Link :href="dashboard()">{{
+                <Link :href="platformHome()">{{
                     t('public.header.mySpace')
                 }}</Link>
             </DropdownMenuItem>

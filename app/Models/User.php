@@ -4,10 +4,9 @@ namespace App\Models;
 
 use App\Enums\AccountStatus;
 use App\Enums\Locale;
-use App\Enums\UserRole;
-use App\Models\Accounts\AccompagnateurProfile;
+use App\Enums\ProfileType;
+use App\Models\Accounts\AdminProfile;
 use App\Models\Accounts\SignInCode;
-use App\Models\Accounts\TrainerProfile;
 use App\Models\Reference\Wilaya;
 use App\Notifications\Accounts\VerifyEmailNotification;
 use Database\Factories\UserFactory;
@@ -16,9 +15,10 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -32,7 +32,10 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $email
  * @property Carbon|null $email_verified_at
  * @property string $password
- * @property UserRole $role
+ * @property ProfileType $type
+ * @property string $profilable_type
+ * @property int $profilable_id
+ * @property-read Model $profile
  * @property AccountStatus $status
  * @property AccountStatus|null $status_before_suspension
  * @property string|null $status_reason
@@ -70,7 +73,6 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'role' => UserRole::class,
             'status' => AccountStatus::class,
             'status_before_suspension' => AccountStatus::class,
             'locale' => Locale::class,
@@ -113,23 +115,46 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     }
 
     /**
-     * The Accompagnateur profile, for Accompagnateur accounts.
+     * The account's profile: AdminProfile, EntrepreneurProfile, AccompagnateurProfile,
+     * TrainerProfile or CitoyenProfile, depending on the type.
      *
-     * @return HasOne<AccompagnateurProfile, $this>
+     * @return MorphTo<Model, $this>
      */
-    public function accompagnateurProfile(): HasOne
+    public function profile(): MorphTo
     {
-        return $this->hasOne(AccompagnateurProfile::class);
+        return $this->morphTo('profile', 'profilable_type', 'profilable_id');
     }
 
     /**
-     * The Formateur profile, for Formateur accounts.
+     * The kind of account, read from and written to profilable_type (the morph-map alias):
+     * setting it picks the profile model the account's profilable_id points to.
      *
-     * @return HasOne<TrainerProfile, $this>
+     * @return Attribute<ProfileType, ProfileType|string>
      */
-    public function trainerProfile(): HasOne
+    protected function type(): Attribute
     {
-        return $this->hasOne(TrainerProfile::class);
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes): ProfileType => ProfileType::from($attributes['profilable_type']),
+            set: fn (ProfileType|string $value): array => [
+                'profilable_type' => ProfileType::from($value instanceof ProfileType ? $value->value : $value)->value,
+            ],
+        );
+    }
+
+    /**
+     * Whether the account belongs to the back-office (administrator or super administrator).
+     */
+    public function isAdministrator(): bool
+    {
+        return $this->type === ProfileType::Admin;
+    }
+
+    /**
+     * Whether the account is a super administrator (admin profile flagged is_super_admin).
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->isAdministrator() && $this->profile instanceof AdminProfile && $this->profile->is_super_admin;
     }
 
     /**

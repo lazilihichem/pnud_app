@@ -2,9 +2,7 @@
 
 namespace Database\Factories\Accounts;
 
-use App\Enums\UserRole;
 use App\Models\Accounts\AccompagnateurProfile;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +18,6 @@ class AccompagnateurProfileFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory()->role(UserRole::Accompagnateur),
             'fonction' => fake()->jobTitle(),
             'capacity' => 0,
         ];

@@ -18,3 +18,7 @@ Fortify's own pages are registered under `/{locale}` by `config/fortify.php` (`p
 
 ## Group by module inside each file
 Inside each route file, group routes per ERD module with a `// <Module>` comment (Route::resource() + the module's invokable routes), as in the controllers rule.
+
+## Member spaces are gated by profile
+Inside `routes/platform.php`, a page that belongs to one kind of account goes in that profile's group: `Route::prefix('formateur')->name('formateur.')->middleware('profile:formateur')->group(...)`. The `profile:` middleware (`EnsureProfileType`, several types allowed: `profile:entrepreneur,citoyen`) answers 403 « Accès réservé » to every other profile, administrators included (FR-04). Only pages shared by every signed-in account (settings, `platform.home`) sit outside a profile group. Never rely on hiding links: every profile route must carry its gate.
+

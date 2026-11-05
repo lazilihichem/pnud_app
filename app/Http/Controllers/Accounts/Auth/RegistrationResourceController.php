@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Accounts\Auth;
 
 use App\Enums\Locale;
-use App\Enums\UserRole;
+use App\Enums\ProfileType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Accounts\Auth\CreateRegistrationRequest;
 use App\Http\Requests\Accounts\Auth\StoreRegistrationRequest;
@@ -32,10 +32,10 @@ class RegistrationResourceController extends Controller
     public function create(CreateRegistrationRequest $request): Response
     {
         return Inertia::render('auth/Register', [
-            'roles' => array_map(fn (UserRole $role): array => [
-                'value' => $role->value,
-                'label' => __("accounts.roles.{$role->value}"),
-            ], UserRole::selfRegistrable()),
+            'roles' => array_map(fn (ProfileType $type): array => [
+                'value' => $type->value,
+                'label' => __("accounts.roles.{$type->value}"),
+            ], ProfileType::selfRegistrable()),
             'wilayas' => $this->wilayaService->options(),
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
         ]);
@@ -51,6 +51,6 @@ class RegistrationResourceController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return to_route($user->role->homeRoute());
+        return to_route('platform.home');
     }
 }

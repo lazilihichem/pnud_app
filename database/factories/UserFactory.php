@@ -4,7 +4,9 @@ namespace Database\Factories;
 
 use App\Enums\AccountStatus;
 use App\Enums\Locale;
-use App\Enums\UserRole;
+use App\Enums\ProfileType;
+use App\Models\Accounts\AdminProfile;
+use App\Models\Accounts\EntrepreneurProfile;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -32,7 +34,8 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'role' => UserRole::Entrepreneur,
+            'profilable_type' => ProfileType::Entrepreneur->value,
+            'profilable_id' => EntrepreneurProfile::factory(),
             'status' => AccountStatus::Active,
             'locale' => Locale::French,
             'terms_version' => config('accounts.terms_version'),
@@ -67,13 +70,28 @@ class UserFactory extends Factory
     }
 
     /**
-     * Give the account the given role and its initial status.
+     * Give the account the given profile (a fresh profile row) and its initial status.
+     *
+     * @param  array<string, mixed>  $profileAttributes
      */
-    public function role(UserRole $role): static
+    public function profile(ProfileType $type, array $profileAttributes = []): static
     {
         return $this->state(fn (array $attributes) => [
-            'role' => $role,
-            'status' => $role->initialStatus(),
+            'profilable_type' => $type->value,
+            'profilable_id' => $type->modelClass()::factory()->state($profileAttributes),
+            'status' => $type->initialStatus(),
+        ]);
+    }
+
+    /**
+     * An active administrator, or super administrator.
+     */
+    public function admin(bool $super = false): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'profilable_type' => ProfileType::Admin->value,
+            'profilable_id' => AdminProfile::factory()->state(['is_super_admin' => $super]),
+            'status' => AccountStatus::Active,
         ]);
     }
 

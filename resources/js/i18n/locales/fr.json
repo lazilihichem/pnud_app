@@ -268,5 +268,28 @@
             "home": "Accueil"
         },
         "skipLink": "Aller au contenu"
+    },
+    "home": {
+        "comingSoon": "Cette page sera complétée avec le module correspondant.",
+        "entrepreneur": {
+            "title": "Espace entrepreneur",
+            "description": "Vos projets ESS, leur dossier et leur accompagnement."
+        },
+        "accompagnateur": {
+            "title": "Espace accompagnateur",
+            "description": "Votre agrément, les projets orientés et vos accompagnements."
+        },
+        "formateur": {
+            "title": "Ma qualification",
+            "description": "Le parcours de qualification des formateurs de l'Académie."
+        },
+        "citoyen": {
+            "title": "Espace citoyen",
+            "description": "Vos contributions aux projets et vos formations."
+        },
+        "admin": {
+            "title": "Administration",
+            "description": "Le back-office de la plateforme."
+        }
     }
 }

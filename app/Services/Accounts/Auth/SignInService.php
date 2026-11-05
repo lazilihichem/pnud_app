@@ -151,7 +151,7 @@ class SignInService
      */
     public function mayRemember(User $user, bool $requested): bool
     {
-        return $requested && ! $user->role->isAdministrator();
+        return $requested && ! $user->isAdministrator();
     }
 
     /**

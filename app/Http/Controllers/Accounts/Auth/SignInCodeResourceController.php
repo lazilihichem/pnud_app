@@ -58,7 +58,7 @@ class SignInCodeResourceController extends Controller
         Auth::login($user, $remember);
         $request->session()->regenerate();
 
-        return redirect()->intended(route($user->role->homeRoute()));
+        return redirect()->intended(route('platform.home'));
     }
 
     /**
